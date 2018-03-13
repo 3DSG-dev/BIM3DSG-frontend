@@ -92,7 +92,7 @@ include("php/auth.php");
                 <div id="ctr-select-nome">
                     <label for="select-nome"><?php echo $_SESSION['objectName']; ?>:</label>
                     <select name="select-nome" id="select-nome" data-native-menu="false">
-                        <option selected="selected" value="*previouslist*" selected="selected">load only previous list</option>
+                        <!--<option selected="selected" value="*previouslist*" selected="selected">load only previous list</option>//-->
                         <option value="" >all items</option>
                     </select>
                 </div>
@@ -101,39 +101,42 @@ include("php/auth.php");
                     <input type="checkbox" name="select-rw" id="select-rw" checked="true" value="">
                 </div>
                 <div id="ctr-select-lod">
-                    <label for="select-lod">Dettaglio modello:</label>
+                    <label for="select-lod">Model resolution:</label>
                     <select name="select-lod" id="select-lod" data-native-menu="false">
-                        <option value="0" selected="selected">0 - Dettaglio massimo</option>
+                        <option value="0" selected="selected">0 - Max resolution</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
                         <option value="5">5</option>
                         <option value="6">6</option>
-                        <option value="7">7 - Dettaglio Minimo</option>
+                        <option value="7">7 - Min resolution</option>
                     </select>
                 </div>
                 <div id="ctr-select-lodtexture">
-                    <label for="select-lodtexture">Dettaglio texture:</label>
+                    <label for="select-lodtexture">Texture resolution:</label>
                     <select name="select-lodtexture" id="select-lodtexture" data-native-menu="false">
-                        <option value="0">0 - Dettaglio massimo</option>
-                        <option value="1" selected="selected">1</option>
+                        <option value="0" selected="selected">0 - Max resolution</option>
+                        <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
                         <option value="5">5</option>
                         <option value="6">6</option>
-                        <option value="7">7 - Dettaglio Minimo</option>
+                        <option value="7">7 - Min resolution</option>
                     </select>
                 </div>
                 <button class="ui-btn ui-shadow ui-corner-all loadbuttons"
                         onclick="LoadScene($('#select-layer0 option:selected').val(),$('#select-layer1 option:selected').val(),$('#select-layer2 option:selected').val(),$('#select-layer3 option:selected').val(),$('#select-nome option:selected').val(),$('#select-lod option:selected').val(),$('#select-lodtexture option:selected').val(),!$('#select-rw').prop('checked'));$('#caricamentoPanel').panel( 'close' );">
-                    Aggiungi alla lista di<br/> importazione e carica
+                    Add to your import list<br />and load the list
                 </button>
-                <button class="ui-btn ui-shadow ui-corner-all loadbuttons" onclick="resettaListaImportazione();">Azzera
-                    la lista<br/> di importazione
+                <button class="ui-btn ui-shadow ui-corner-all loadbuttons"
+                        onclick="LoadScene('','','','','*previouslist*',$('#select-lod option:selected').val(),$('#select-lodtexture option:selected').val(),!$('#select-rw').prop('checked'));$('#caricamentoPanel').panel( 'close' );">
+                    Load your list<br>(previously imported items)
                 </button>
-                <button class="ui-btn ui-shadow ui-corner-all loadbuttons" onclick="resettaVista();">Resetta la vista
+                <button class="ui-btn ui-shadow ui-corner-all loadbuttons" onclick="resettaListaImportazione();">Reset your list
+                </button>
+                <button class="ui-btn ui-shadow ui-corner-all loadbuttons" onclick="resettaVista();">Reset the view
                 </button>
             </div>
         </div>

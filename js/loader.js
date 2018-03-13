@@ -932,7 +932,7 @@ $(document).ready(function () {
             })
             .then(function (response) {
                 html = "";
-                html += "<option value=\"*previouslist*\">" + "load only previous list</option>";
+                //html += "<option value=\"*previouslist*\">" + "load only previous list</option>";
                 html += "<option value=\"\">" + "all items</option>";
                 html += "<option value=\"\">" + "all items</option>";
 
