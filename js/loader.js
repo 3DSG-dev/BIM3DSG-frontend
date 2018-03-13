@@ -1806,6 +1806,8 @@ function SelectAll() {
 function UnselectObject(pickedObject) {
     pickedObject.node(0).node(0).node(0).setParams({colorTransEnabled: false});
     _selectedObjectList.splice(_selectedObjectList.indexOf(pickedObject), 1);
+
+    ResetAllPanels();
 }
 
 function UnselectAllObjects() {
@@ -1814,10 +1816,16 @@ function UnselectAllObjects() {
     }
     _selectedObjectList = [];
 
+    ResetAllPanels();
+}
+
+function ResetAllPanels() {
     $("#CategoryCombo").selectmenu('disable').val(0).selectmenu('refresh');
     ResetCategoryVisibility();
     ResetInfoPanel(".infoOggettoPanelAux2");
     ResetInfoPanel(".infoVersionPanelAux2");
+    UpdateImagePanel(0);
+    _selectedWriteMode = false;
 }
 
 function LookAtObject(pickedObject) {

@@ -15,7 +15,7 @@ $soloInfoValue = (isset($_GET['soloInfo'])?$_GET['soloInfo']:$_POST['soloInfo'])
 
 //$SQL= "select \"file\", \"LastUpdate\" from \"MaterialeOggetti\" where \"CodicePezzo\"= (SELECT \"CodicePezzo\" FROM \"OggettiVersioni\" WHERE \"Codice\" = $codice) AND \"URL\" ='$urlValue' ORDER BY \"Qualità\" ASC LIMIT 1";
 //if ($qualityValue =='max' )
-	$SQL= "select " . ($soloInfoValue ? "" : "\"file\", ") . "\"LastModified\" from \"MaterialeOggetti\" where \"CodicePezzo\"= (SELECT \"CodicePezzo\" FROM \"OggettiVersioni\" WHERE \"Codice\" = $codice) AND \"URL\" ='$urlValue' ORDER BY \"Qualità\" " . ($qualityValue =='max' ? "DESC" : "ASC") . " LIMIT 1";
+	$SQL= "select " . ($soloInfoValue ? "" : "\"file\", ") . "\"LastModified\" from \"MaterialeOggetti\" where \"CodiceOggetto\"= (SELECT \"CodiceOggetto\" FROM \"OggettiVersion\" WHERE \"Codice\" = $codice) AND \"URL\" ='$urlValue' ORDER BY \"Qualità\" " . ($qualityValue =='max' ? "DESC" : "ASC") . " LIMIT 1";
 
 $result1 = pg_query($dbconn, utf8_encode($SQL)) or die ("Error: $SQL");
 while($tmp = pg_fetch_array($result1, NULL, PGSQL_ASSOC))

@@ -146,17 +146,17 @@ if(isset($_FILES["FileInput"]) && $_FILES["FileInput"]["error"]== UPLOAD_ERR_OK)
 
 		$now= date("Y-m-d H:i:s");
 		if ($mittente==1){
-			$SQL= "INSERT INTO \"MaterialeOggetti\" VALUES ($codiceOggetto, '$URL', 'immagine', $quality, NULL, '$dataIns', 7, 4, 0, 'web', 'web', '$fileEncodedByteA','$now', ' " . $_SESSION['validUser'] . "')";
+			$SQL= "INSERT INTO \"MaterialeOggetti\" VALUES ($codiceOggetto, '$URL', 'immagine', $quality, '$fileEncodedByteA', NULL, '$dataIns', 7, 4, 0, 'web', 'web','$now', '" . $_SESSION['validUserName'] . "')";
 			$result1 = pg_query($dbconn, utf8_encode($SQL)) or die ("Error: $SQL");
 
-			$SQL= "INSERT INTO \"MaterialeOggetti\" VALUES ($codiceOggetto, '$URL', 'immagine', $qualityThumb, NULL, '$dataIns', 7, 4, 0, 'web', 'web', '$fileThumbEncodedByteA','$now', ' " . $_SESSION['validUser'] . "');";
+			$SQL= "INSERT INTO \"MaterialeOggetti\" VALUES ($codiceOggetto, '$URL', 'immagine', $qualityThumb, '$fileThumbEncodedByteA', NULL, '$dataIns', 7, 4, 0, 'web', 'web','$now', '" . $_SESSION['validUserName'] . "');";
 			$result1 = pg_query($dbconn, utf8_encode($SQL)) or die ("Error: $SQL");
 		}
 		if ($mittente==2){
-			$SQL= "INSERT INTO \"MaterialeVersioni\" VALUES ($codiceOggetto, '$URL', 'immagine', $quality, NULL, '$dataIns', 7, 4, 0, 'web', 'web', '$fileEncodedByteA','$now', ' " . $_SESSION['validUser'] . "')";
+			$SQL= "INSERT INTO \"MaterialeVersioni\" VALUES ($codiceOggetto, '$URL', 'immagine', $quality, '$fileEncodedByteA', NULL, '$dataIns', 7, 4, 0, 'web', 'web','$now', '" . $_SESSION['validUserName'] . "')";
 			$result1 = pg_query($dbconn, utf8_encode($SQL)) or die ("Error: $SQL");
 
-			$SQL= "INSERT INTO \"MaterialeVersioni\" VALUES ($codiceOggetto, '$URL', 'immagine', $qualityThumb, NULL, '$dataIns', 7, 4, 0, 'web', 'web', '$fileThumbEncodedByteA','$now', ' " . $_SESSION['validUser'] . "');";
+			$SQL= "INSERT INTO \"MaterialeVersioni\" VALUES ($codiceOggetto, '$URL', 'immagine', $qualityThumb, '$fileThumbEncodedByteA', NULL, '$dataIns', 7, 4, 0, 'web', 'web','$now', '" . $_SESSION['validUserName'] . "');";
 			$result1 = pg_query($dbconn, utf8_encode($SQL)) or die ("Error: $SQL");
 		}
 /*		else{
