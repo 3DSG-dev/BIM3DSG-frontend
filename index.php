@@ -65,6 +65,38 @@ include("php/auth.php");
         <!--------->
         <div id="caricamentoPanelAux">
             <div id="caricamentoPanelAux2">
+                <div id="ctr-select-lod">
+                    <label for="select-lod">Model resolution:</label>
+                    <select name="select-lod" id="select-lod" data-native-menu="false">
+                        <option value="0" selected="selected">0 - Max resolution</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7 - Min resolution</option>
+                    </select>
+                </div>
+                <div id="ctr-select-lodtexture">
+                    <label for="select-lodtexture">Texture resolution:</label>
+                    <select name="select-lodtexture" id="select-lodtexture" data-native-menu="false">
+                        <option value="0" selected="selected">0 - Max resolution</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7 - Min resolution</option>
+                    </select>
+                </div>
+                <hr>
+                <button class="ui-btn ui-shadow ui-corner-all loadbuttons"
+                        onclick="LoadScene('','','','','*previouslist*',$('#select-lod option:selected').val(),$('#select-lodtexture option:selected').val(),!$('#select-rw').prop('checked'));$('#caricamentoPanel').panel( 'close' );">
+                    Load your list
+                </button>
+                <hr>
                 <div id="ctr-select-layer0">
                     <label for="select-layer0"><?php echo $_SESSION['layer0']; ?>:</label>
                     <select name="select-layer0" id="select-layer0" data-native-menu="false">
@@ -100,43 +132,16 @@ include("php/auth.php");
                     <label for="select-rw">Read-only</label>
                     <input type="checkbox" name="select-rw" id="select-rw" checked="true" value="">
                 </div>
-                <div id="ctr-select-lod">
-                    <label for="select-lod">Model resolution:</label>
-                    <select name="select-lod" id="select-lod" data-native-menu="false">
-                        <option value="0" selected="selected">0 - Max resolution</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7 - Min resolution</option>
-                    </select>
-                </div>
-                <div id="ctr-select-lodtexture">
-                    <label for="select-lodtexture">Texture resolution:</label>
-                    <select name="select-lodtexture" id="select-lodtexture" data-native-menu="false">
-                        <option value="0" selected="selected">0 - Max resolution</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7 - Min resolution</option>
-                    </select>
-                </div>
                 <button class="ui-btn ui-shadow ui-corner-all loadbuttons"
                         onclick="LoadScene($('#select-layer0 option:selected').val(),$('#select-layer1 option:selected').val(),$('#select-layer2 option:selected').val(),$('#select-layer3 option:selected').val(),$('#select-nome option:selected').val(),$('#select-lod option:selected').val(),$('#select-lodtexture option:selected').val(),!$('#select-rw').prop('checked'));$('#caricamentoPanel').panel( 'close' );">
-                    Add to your import list<br />and load the list
+                    Add to your list and load it
                 </button>
-                <button class="ui-btn ui-shadow ui-corner-all loadbuttons"
-                        onclick="LoadScene('','','','','*previouslist*',$('#select-lod option:selected').val(),$('#select-lodtexture option:selected').val(),!$('#select-rw').prop('checked'));$('#caricamentoPanel').panel( 'close' );">
-                    Load your list<br>(previously imported items)
+                <hr>
+                <button class="ui-btn ui-shadow ui-corner-all loadbuttons" onclick="resettaListaImportazione();">
+                    Reset your list
                 </button>
-                <button class="ui-btn ui-shadow ui-corner-all loadbuttons" onclick="resettaListaImportazione();">Reset your list
-                </button>
-                <button class="ui-btn ui-shadow ui-corner-all loadbuttons" onclick="resettaVista();">Reset the view
+                <button class="ui-btn ui-shadow ui-corner-all loadbuttons" onclick="resettaVista();">
+                    Reset the view
                 </button>
             </div>
         </div>
@@ -554,8 +559,8 @@ include("php/auth.php");
                                 <select data-native-menu="false" class="infoInputText" name="HotSpotCategoryCombo" id="HotSpotCategoryCombo">
                                     <option value='0'>-</option>";
                                 </select>
-<!--                                <label for="colorHotSpotColor" class="infoLabel">HotSpot Color</label>
-                                <input type="color" class="infoInputText" name="colorHotSpotColor" id="colorHotSpotColor">//-->
+                                <!--                                <label for="colorHotSpotColor" class="infoLabel">HotSpot Color</label>
+                                                                <input type="color" class="infoInputText" name="colorHotSpotColor" id="colorHotSpotColor">//-->
                             </div>
                             <input type="button" id="addHotSpotBtn" value="Insert"/>
                             <input type="button" id="cancelHotSpotBtn" value="Cancel"/>
@@ -639,54 +644,54 @@ include("php/auth.php");
         <h1><?php echo $titolo; ?></h1>
         <table id="tableCredit">
             <tr>
-<!--                <td class="colonnaCredits" id="colonnaCreditsLeft">
-                    <h3 class="creditSubtitle">Progetto "Bergamo Citt&agrave; Alta in 3D"</h3>
-                    <h5>
-                        Finanziamento:
-                        <ul class="listaCredits">
-                            <li>MIUR & <a href="http://www.comune.bergamo.it" target="_blank">Comune di Bergamo</a></li>
-                        </ul>
-                        Partner:<br>
-                        <ul class="listaCredits">
-                            <li>
-                                <a href="http://185.56.11.186/itgsquarenghi/" target="_blank">Istituto Quarenghi</a>, Bergamo
-                                <ul>
-                                    <li>responsabile del progetto: Cesare Emer Botti</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="https://www.fbk.eu/it/" target="_blank">Fondazione Bruno Kessler</a>, Trento
-                                <ul>
-                                    <li>responsabile del progetto: Fabio Remondino</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="http://www.comune.bergamo.it" target="_blank">Comune di Bergamo</a>, <a href="http://www.comune.bergamo.it/servizi/Menu/dinamica.aspx?idSezione=3780&idArea=1182&idCat=1195&ID=1859&TipoElemento=pagina" target="_blank">Servizio Sistema Informativo<br>Territoriale e Statistica</a>
-                                <ul>
-                                    <li>responsabile del progetto: Andrea Maffeis</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="http://www.avt.at" target="_blank">AVT Vermessung</a>
-                                <ul>
-                                    <li>responsabile del progetto: Klaus Legat</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="http://www.sinecospa.com" target="_blank">SINECO</a>
-                                <ul>
-                                    <li>responsabile del progetto: Michele Mori</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="http://www.polimi.it" target="_blank">Politecnico di Milano</a>
-                                <ul>
-                                    <li>responsabile del progetto: Francesco Fassi</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </h5>
-                </td>//-->
+                <!--                <td class="colonnaCredits" id="colonnaCreditsLeft">
+                                    <h3 class="creditSubtitle">Progetto "Bergamo Citt&agrave; Alta in 3D"</h3>
+                                    <h5>
+                                        Finanziamento:
+                                        <ul class="listaCredits">
+                                            <li>MIUR & <a href="http://www.comune.bergamo.it" target="_blank">Comune di Bergamo</a></li>
+                                        </ul>
+                                        Partner:<br>
+                                        <ul class="listaCredits">
+                                            <li>
+                                                <a href="http://185.56.11.186/itgsquarenghi/" target="_blank">Istituto Quarenghi</a>, Bergamo
+                                                <ul>
+                                                    <li>responsabile del progetto: Cesare Emer Botti</li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="https://www.fbk.eu/it/" target="_blank">Fondazione Bruno Kessler</a>, Trento
+                                                <ul>
+                                                    <li>responsabile del progetto: Fabio Remondino</li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="http://www.comune.bergamo.it" target="_blank">Comune di Bergamo</a>, <a href="http://www.comune.bergamo.it/servizi/Menu/dinamica.aspx?idSezione=3780&idArea=1182&idCat=1195&ID=1859&TipoElemento=pagina" target="_blank">Servizio Sistema Informativo<br>Territoriale e Statistica</a>
+                                                <ul>
+                                                    <li>responsabile del progetto: Andrea Maffeis</li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="http://www.avt.at" target="_blank">AVT Vermessung</a>
+                                                <ul>
+                                                    <li>responsabile del progetto: Klaus Legat</li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="http://www.sinecospa.com" target="_blank">SINECO</a>
+                                                <ul>
+                                                    <li>responsabile del progetto: Michele Mori</li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="http://www.polimi.it" target="_blank">Politecnico di Milano</a>
+                                                <ul>
+                                                    <li>responsabile del progetto: Francesco Fassi</li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </h5>
+                                </td>//-->
                 <td class="colonnaCredits" id="colonnaCreditsRight">
                     <h3 class="creditSubtitle">BIM3DSG, Online 3D Information System</h3>
                     <h5>

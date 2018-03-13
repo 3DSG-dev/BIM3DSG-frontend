@@ -253,6 +253,7 @@
     width: 262px;
     padding: 5px;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 #caricamentoPanelAux2 {
@@ -500,6 +501,22 @@ div.HiddenUI {
 div.VisibleUI {
     visibility: inherit;
     height: auto;
+}
+
+hr {
+    display: block;
+    position: relative;
+    padding: 0;
+    margin: 16px auto 8px auto;
+    height: 0;
+    width: 85%;
+    max-height: 0;
+    font-size: 1px;
+    line-height: 0;
+    clear: both;
+    border: none;
+    border-top: 1px solid #aaaaaa;
+    border-bottom: 1px solid #ffffff;
 }
 
 @media screen and (min-width: 640px) and (max-width: 1279px) {
