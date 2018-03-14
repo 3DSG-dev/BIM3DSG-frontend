@@ -263,7 +263,7 @@
     padding-bottom: 0px;
 }
 
-#immaginiPezzoPanelAux {
+#immaginiPezzoPanelAux, #infoOggettoPanelAux{
     position: absolute;
     top: 0;
     bottom: 0;
