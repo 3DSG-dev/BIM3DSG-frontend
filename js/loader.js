@@ -2075,6 +2075,9 @@ function UpdateInfoPanel(codice) {
         else if (resultData2.IsCombo == "t") {
             $(id).val(resultData2.ComboValue).selectmenu('refresh');
         }
+        else if (resultData2.IsMultiCombo == "t") {
+            $(id).val(resultData2.MultiComboValue.split('_')).selectmenu('refresh');
+        }
         else if (resultData2.IsBool == "t" || resultData2.IsLink == "t") {
             $(id).prop("checked", resultData2.BoolValue == "t").checkboxradio("refresh");
         }
@@ -2968,6 +2971,12 @@ function CreateSchedeContent(codiceScheda) {
                         $(id).append("</select>");
                         FillComboValue(codiceCampo);
                     }
+                    else if (resultData[i].IsMultiCombo == "t") {
+                        $(id).append("<a title=\"Aggiungi valore\" href=\"" + id2 + "\" class=\"addValueImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-plus ui-btn-icon-notext\">navigation</a>");
+                        $(id).append("<select data-native-menu=\"false\" class=\"infoInputText\" multiple=\"multiple\" disabled=\"disabled\" data-tipo=\"multicombo\" data-codice=\"" + codiceCampo + "\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\">");
+                        $(id).append("</select>");
+                        FillComboValue(codiceCampo);
+                    }
                     else {
                         if (height > 33) {
                             $(id).append("<textarea class=\"infoInputText\" data-tipo=\"text\" data-codice=\"" + codiceCampo + "\" disabled=\"disabled\" name=\"" + id2 + "\" id=\"" + id2 + "\" data-clear-btn=\"true\" value=\"\"></textarea>");
@@ -3115,6 +3124,25 @@ function CreateSchedeContent(codiceScheda) {
                                     }
                                 })
                             }
+                            else if (elem[0].dataset.tipo == "multicombo") {
+                                $.ajax({
+                                    url: "./php/setInfoOggettoMultiCombo.php",
+                                    dataType: "json",
+                                    crossDomain: false,
+                                    data: {
+                                        codiceOggetto: $('#textCodice').val(),
+                                        codiceCampo: elem[0].dataset.codice,
+                                        valore: elem.val() == 0 ? null : elem.val().join('_')
+                                    },
+                                    success: function (resultData) {
+                                        btn.removeClass("ui-btn-active");
+                                        btn.css('visibility', 'collapse');
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                })
+                            }
                             else if (elem[0].dataset.tipo == "checkbox" || elem[0].dataset.tipo == "link") {
                                 $.ajax({
                                     url: "./php/setInfoOggettoCheckbox.php",
@@ -3199,7 +3227,10 @@ function CreateSchedeVersionContent(codiceScheda) {
                 if (resultData[i].IsTitle == "t") {
                     $(id).append("<h5 class=\"infoTitle\">" + campo + "</h5>");
                 }
-                else if (resultData[i].IsSeparator == "f") {
+                if (resultData[i].IsSeparator == "t") {
+                    $(id).append("<hr>");
+                }
+                else {
                     var height = 33 * resultData[i].Height / 22;
 
                     $(id).append("<a title=\"Salva\" href=\"" + id2 + "\" class=\"salvaImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-check ui-btn-icon-notext hide\">navigation</a>");
@@ -3222,6 +3253,11 @@ function CreateSchedeVersionContent(codiceScheda) {
                     }
                     else if (resultData[i].IsCombo == "t") {
                         $(id).append("<select data-native-menu=\"false\" class=\"infoInputText\" disabled=\"disabled\" data-tipo=\"combo\" data-codice=\"" + codiceCampo + "\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\">");
+                        $(id).append("</select>");
+                        //FillComboValue(codiceCampo);
+                    }
+                    else if (resultData[i].IsMultiCombo == "t") {
+                        $(id).append("<select data-native-menu=\"false\" class=\"infoInputText\" multiple=\"multiple\" disabled=\"disabled\" data-tipo=\"combo\" data-codice=\"" + codiceCampo + "\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\">");
                         $(id).append("</select>");
                         //FillComboValue(codiceCampo);
                     }
@@ -3325,6 +3361,25 @@ function CreateSchedeVersionContent(codiceScheda) {
                                         codiceOggetto: $('#textCodiceVersione').val(),
                                         codiceCampo: elem[0].dataset.codice,
                                         valore: elem.val() == 0 ? null : elem.val()
+                                    },
+                                    success: function (resultData) {
+                                        btn.removeClass("ui-btn-active");
+                                        btn.css('visibility', 'collapse');
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                })
+                            }
+                            else if (elem[0].dataset.tipo == "multicombo") {
+                                $.ajax({
+                                    url: "./php/setInfoVersionOggettoMultiCombo.php",
+                                    dataType: "json",
+                                    crossDomain: false,
+                                    data: {
+                                        codiceOggetto: $('#textCodiceVersione').val(),
+                                        codiceCampo: elem[0].dataset.codice,
+                                        valore: elem.val() == 0 ? null : elem.val().join('_')
                                     },
                                     success: function (resultData) {
                                         btn.removeClass("ui-btn-active");
