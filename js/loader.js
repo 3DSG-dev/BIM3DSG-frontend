@@ -2936,7 +2936,10 @@ function CreateSchedeContent(codiceScheda) {
                 if (resultData[i].IsTitle == "t") {
                     $(id).append("<h5 class=\"infoTitle\">" + campo + "</h5>");
                 }
-                else if (resultData[i].IsSeparator == "f") {
+                if (resultData[i].IsSeparator == "t") {
+                    $(id).append("<hr>");
+                }
+                else {
                     var height = 33 * resultData[i].Height / 22;
 
                     $(id).append("<a title=\"Salva\" href=\"" + id2 + "\" class=\"salvaImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-check ui-btn-icon-notext hide\">navigation</a>");
