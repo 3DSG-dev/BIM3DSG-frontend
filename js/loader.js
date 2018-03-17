@@ -2853,6 +2853,10 @@ function ResetCategoryVisibility() {
 function CreateSchede() {
     var childs = $(".infoOggettoPanelAux2").children();
     childs.splice(0, 1);
+    childs.find("input").each(function (i, elem) {
+        $(this).destroy();
+    });
+
     childs.each(function () {
         this.remove();
     });
