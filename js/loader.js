@@ -368,6 +368,7 @@ function LoadScene(layer0, layer1, layer2, layer3, nome, lodModello, lodTexture,
             alert(textStatus);
         })
         .complete(function () {
+            UnselectAllObjects();
             console.log("Loaded!");
         });
 }
@@ -2853,8 +2854,8 @@ function ResetCategoryVisibility() {
 function CreateSchede() {
     var childs = $(".infoOggettoPanelAux2").children();
     childs.splice(0, 1);
-    childs.find("input").each(function (i, elem) {
-        $(this).destroy();
+    childs.find("select").each(function (i, elem) {
+        $(this).selectmenu( "destroy" );
     });
 
     childs.each(function () {
@@ -2879,8 +2880,8 @@ function CreateSchede() {
     });
     childs = $(".infoVersionPanelAux2").children();
     childs.splice(0, 2);
-    childs.find("input").each(function (i, elem) {
-        $(this).destroy();
+    childs.find("select").each(function (i, elem) {
+        $(this).selectmenu( "destroy" );
     });
     childs.each(function () {
         this.remove();
