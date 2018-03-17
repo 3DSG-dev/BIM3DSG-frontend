@@ -2879,6 +2879,9 @@ function CreateSchede() {
     });
     childs = $(".infoVersionPanelAux2").children();
     childs.splice(0, 2);
+    childs.find("input").each(function (i, elem) {
+        $(this).destroy();
+    });
     childs.each(function () {
         this.remove();
     });
