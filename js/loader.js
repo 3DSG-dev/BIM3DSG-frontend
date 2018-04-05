@@ -1553,7 +1553,12 @@ function ShowDistanceText(coords) {
     var pickRecord = _myScene.pick({canvasPos: [coords.x, coords.y], rayPick: true});
     if (pickRecord) {
         var dist = Distance(_measureFirstCord, pickRecord.worldPos);
-        $("#distanceText").text("distance: " + dist.toFixed(2) + " m");
+        var tmp = dist / 0.52;
+        var cubit = Math.floor(tmp);
+        tmp = (tmp - cubit) * 7;
+        var palm = Math.floor(tmp);
+        var finger = Math.floor((tmp - palm) * 4);
+        $("#distanceText").text("distance: " + dist.toFixed(2) + " m - royal cubit: " + cubit + "c " + palm + "p " + finger + "f");
     }
     else {
         $("#distanceText").text("outside object!");
