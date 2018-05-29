@@ -340,6 +340,10 @@ include("php/auth.php");
                class="ui-btn-double-size ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-home ui-btn-icon-notext <?php if (!isset($_SESSION['validUser'])) {
                    echo "hide";
                } ?>">Resetta lo sguardo</a>
+            <a id="renameObject" title="Rinomina l'oggetto" href=""
+               class="ui-btn-double-size ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-edit ui-btn-icon-notext <?php if (!isset($_SESSION['validUser'])) {
+                   echo "hide";
+               } ?>">Rinomina l'oggetto</a>
             <a id="selectAnchor" title="Selezione singola / Selezione multipla" href=""
                class="ui-btn-double-size ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-navigation ui-btn-icon-notext <?php if (!isset($_SESSION['validUser'])) {
                    echo "hide";
@@ -564,6 +568,36 @@ include("php/auth.php");
                             </div>
                             <input type="button" id="addHotSpotBtn" value="Insert"/>
                             <input type="button" id="cancelHotSpotBtn" value="Cancel"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-role="popup" id="renameObjectPopup" data-theme="a" class="ui-corner-all" data-dismissible="false">
+            <div id="renameObjectPopupInside">
+                <div id="upload-wrapper">
+                    <div align="center">
+                        <h3>Insert the new name</h3>
+                        <form action="" id="renameObjectForm">
+                            <div id="inputrenameObjectPopup">
+                                <label for="textrenameObjectLayer0" class="infoLabel"><?php echo $_SESSION['layer0']; ?>:</label>
+                                <input type="text" class="infoInputText" name="textrenameObjectLayer0"
+                                       id="textrenameObjectLayer0" value="">
+                                <label for="textrenameObjectLayer1" class="infoLabel"><?php echo $_SESSION['layer1']; ?>:</label>
+                                <input type="text" class="infoInputText" name="textrenameObjectLayer1"
+                                       id="textrenameObjectLayer1" value="">
+                                <label for="textrenameObjectLayer2" class="infoLabel"><?php echo $_SESSION['layer2']; ?>:</label>
+                                <input type="text" class="infoInputText" name="textrenameObjectLayer2"
+                                       id="textrenameObjectLayer2" value="">
+                                <label for="textrenameObjectLayer3" class="infoLabel"><?php echo $_SESSION['layer3']; ?>:</label>
+                                <input type="text" class="infoInputText" name="textrenameObjectLayer3"
+                                       id="textrenameObjectLayer3" value="">
+                                <label for="textrenameObjectName" class="infoLabel"><?php echo $_SESSION['objectName']; ?>:</label>
+                                <input type="text" class="infoInputText" name="textrenameObjectName"
+                                       id="textrenameObjectName" value="">
+                            </div>
+                            <input type="button" id="renameObjectOKBtn" value="Rename"/>
+                            <input type="button" id="cancelrenameObjectBtn" value="Cancel"/>
                         </form>
                     </div>
                 </div>

@@ -1211,6 +1211,48 @@ $(document).on("pagecreate", function () {
         }
     });
 
+    $("#cancelrenameObjectBtn").unbind('click').bind('click', function () {
+        $("#renameObjectPopup").popup( "close" );
+    });
+
+    $("#renameObjectOKBtn").unbind('click').bind('click', function () {
+        if ($('#textrenameObjectLayer0').val() != "" && $('#textrenameObjectLayer1').val() != "" && $('#textrenameObjectLayer2').val() != "" && $('#textrenameObjectLayer3').val() != "" && $('#textrenameObjectName').val() != "") {
+            if (confirm("Are you sure?")) {
+                $.ajax({
+                    type: 'POST',
+                    url: 'php/renameObject.php',
+                    data: {
+                        codiceOggetto: $('#textCodice').val(),
+                        layer0: $('#textrenameObjectLayer0').val(),
+                        layer1: $('#textrenameObjectLayer1').val(),
+                        layer2: $('#textrenameObjectLayer2').val(),
+                        layer3: $('#textrenameObjectLayer3').val(),
+                        nome: $('#textrenameObjectName').val(),
+                    },
+                    dataType: "json",
+                    success: function (resultData) {
+                        $("#renameObjectPopup").popup("close");
+                        alert("Object is renamed successful");
+                        $('#textLayer0').val($('#textrenameObjectLayer0').val());
+                        $('#textLayer1').val($('#textrenameObjectLayer1').val());
+                        $('#textLayer2').val($('#textrenameObjectLayer2').val());
+                        $('#textLayer3').val($('#textrenameObjectLayer3').val());
+                        $('#textName').val($('#textrenameObjectName').val());
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert("Si è verificato un errore.");
+                    }
+                });
+            }
+            else {
+                $("#renameObjectPopup").popup("close");
+            }
+        }
+        else {
+            alert("You must choose not empty values!");
+        }
+    });
+
     $("#cancelComboValueBtn").unbind('click').bind('click', function () {
         $("#addComboValuePopup").popup( "close" );
     });
@@ -1524,6 +1566,7 @@ function SetToolbarEvent(blocchi) {
     $("#hideUnselectedObject").unbind('click').bind('click', RemoveUnselected);
     $("#showHidden").unbind('click').bind('click', ShowHiddenObject);
     $("#resetEye").unbind('click').bind('click', ResetEye);
+    $("#renameObject").unbind('click').bind('click', RenameObject);
 }
 
 function MouseDownHandler(event) {
@@ -3474,6 +3517,44 @@ function AddNewHotSpot(pickRecord) {
             alert("Si � verificato un errore.");
         }
     });
+}
+
+//Object Actions
+function RenameObject() {
+    if (_singleSelecting) {
+        if (_selectedWriteMode) {
+            $.ajax({
+                url: "./php/canRenameObject.php",
+                dataType: "json",
+                crossDomain: false,
+                data: {
+                    codiceOggetto: $('#textCodice').val(),
+                },
+                success: function (resultData) {
+                    if (resultData == "ok") {
+                        $("#renameObjectPopup").popup( "open" );
+                        $('#textrenameObjectLayer0').val($('#textLayer0').val());
+                        $('#textrenameObjectLayer1').val($('#textLayer1').val());
+                        $('#textrenameObjectLayer2').val($('#textLayer2').val());
+                        $('#textrenameObjectLayer3').val($('#textLayer3').val());
+                        $('#textrenameObjectName').val($('#textName').val());
+                    }
+                    else {
+                        alert(resultData);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Si è verificato un errore.");
+                }
+            })
+        }
+        else {
+            alert("You can't rename the object: selected item is imported read-only!");
+        }
+    }
+    else {
+        alert("You must select only one object!");
+    }
 }
 
 // upload images
