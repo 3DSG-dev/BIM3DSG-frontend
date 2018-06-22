@@ -13,9 +13,9 @@ $valore = pg_escape_string ($valore);
 
 if (($codiceOggetto!="null") && ($codiceOggetto!="") && ($codiceCampo!="null") && ($codiceCampo!="")) {
 	if (($valore == "null") || ($valore == "")) {
-		$SQL = "SELECT setoggettiiversioniinfoschedavalue($codiceOggetto, '$title', '$campo', null)";
+		$SQL = "SELECT setoggettiversioniinfoschedavalue($codiceOggetto, $codiceCampo, null)";
 	} else {
-		$SQL = "SELECT setoggettiiversioniinfoschedavalue($codiceOggetto, '$title', '$campo', $valore)";
+		$SQL = "SELECT setoggettiversioniinfoschedavalue($codiceOggetto, $codiceCampo, to_timestamp('$valore', 'MM/DD/YYYY HH24:MI'))";
 	}
 }
 else
