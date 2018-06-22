@@ -1567,6 +1567,7 @@ function SetToolbarEvent(blocchi) {
     $("#showHidden").unbind('click').bind('click', ShowHiddenObject);
     $("#resetEye").unbind('click').bind('click', ResetEye);
     $("#renameObject").unbind('click').bind('click', RenameObject);
+    $("#deleteObject").unbind('click').bind('click', DeleteObject);
 }
 
 function MouseDownHandler(event) {
@@ -3608,6 +3609,36 @@ function RenameObject() {
                     alert("Si è verificato un errore.");
                 }
             })
+        }
+        else {
+            alert("You can't rename the object: selected item is imported read-only!");
+        }
+    }
+    else {
+        alert("You must select only one object!");
+    }
+}
+
+function DeleteObject() {
+    if (_singleSelecting) {
+        if (_selectedWriteMode) {
+            if (confirm("Are you sure to delete current object?")) {
+                $.ajax({
+                    url: "./php/deleteObject.php",
+                    dataType: "json",
+                    crossDomain: false,
+                    data: {
+                        codiceOggetto: $('#textCodice').val(),
+                    },
+                    success: function (resultData) {
+                        alert("The object is deleted");
+                        _selectedObjectList[0].destroy();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert("Si è verificato un errore.");
+                    }
+                });
+            }
         }
         else {
             alert("You can't rename the object: selected item is imported read-only!");

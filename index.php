@@ -344,6 +344,10 @@ include("php/auth.php");
                class="ui-btn-double-size ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-edit ui-btn-icon-notext <?php if (!isset($_SESSION['validUser'])) {
                    echo "hide";
                } ?>">Rinomina l'oggetto</a>
+            <a id="deleteObject" title="Cancella l'oggetto" href=""
+               class="ui-btn-double-size ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-delete ui-btn-icon-notext <?php if (!isset($_SESSION['validUser'])) {
+                   echo "hide";
+               } ?>">Cancella l'oggetto</a>
             <a id="selectAnchor" title="Selezione singola / Selezione multipla" href=""
                class="ui-btn-double-size ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-navigation ui-btn-icon-notext <?php if (!isset($_SESSION['validUser'])) {
                    echo "hide";
