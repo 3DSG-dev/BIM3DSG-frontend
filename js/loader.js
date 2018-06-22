@@ -2157,6 +2157,24 @@ function UpdateInfoPanel(codice) {
                 alert("Si � verificato un errore.");
             }
         });
+
+        $.ajax({
+            type: 'POST',
+            url: 'php/getOggettiVersionCategorySchede.php',
+            data: {
+                categoria: categoria
+            },
+            dataType: "json",
+            success: function (resultData) {
+                for (i in resultData) {
+                    var id = ".infoOggettoVersionPanelDynamic_" + resultData[i].CodiceScheda;
+                    $(id).parent().parent().removeClass("HiddenUI").addClass("VisibleUI");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("Si � verificato un errore.");
+            }
+        });
     }
 
     $.ajax({
@@ -2347,7 +2365,7 @@ function UpdateInfoPanel(codice) {
         success: function (resultData) {
             for (i in resultData) {
                 var id = "#textVersionDynamic_____" + resultData[i].CodiceCampo;;
-                var titleId = "#titleInfoVersionPanelDynamic_" + resultData[i].CodiceScheda;
+                var titleId = "#titleInfoVersionPanelDynamic_" + resultData[i].CodiceTitolo;
 
                 SetExpanderColor(titleId);
                 SetDynamicBoxData(resultData[i], id);
@@ -2942,7 +2960,7 @@ function CreateSchede() {
         success: function (resultData) {
             for (i in resultData) {
                 $(".infoVersionPanelAux2").append("<div data-role=\"collapsible\" data-inset=\"false\" class=\"HiddenUI\"><h5 class=\"infoTitleExpander ui-page-theme-a\" id=\"titleInfoVersionPanelDynamic_" + resultData[i].Codice + "\">" + resultData[i].Titolo + "</h5><div class=\"infoOggettoVersionPanelDynamic_" + resultData[i].Codice + "\"></div></div>");
-                CreateSchedeVersionContent(resultData[i].Titolo);
+                CreateSchedeVersionContent(resultData[i].Codice);
             }
 
             $(".infoVersionPanelAux2").trigger("create");
@@ -2995,7 +3013,7 @@ function CreateSchedeContent(codiceScheda) {
                 if (resultData[i].IsTitle == "t") {
                     $(id).append("<h5 class=\"infoTitle\">" + campo + "</h5>");
                 }
-                if (resultData[i].IsSeparator == "t") {
+                else if (resultData[i].IsSeparator == "t") {
                     $(id).append("<hr>");
                 }
                 else {
@@ -3047,36 +3065,38 @@ function CreateSchedeContent(codiceScheda) {
                         if (_selectedWriteMode) {
                             var elem = $("#" + this.pathname.substr(1));
                             tempCodiceCampo = elem[0].dataset.codice;
+                            $("#textAddInfoComboValue").val("");
+
+                            $("#addComboValueBtn").unbind('click').bind('click', function () {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: 'php/addInfoComboValue.php',
+                                    data: {
+                                        CodiceCampo: tempCodiceCampo,
+                                        Valore: $('#textAddInfoComboValue').val()
+                                    },
+                                    dataType: "json",
+                                    success: function (resultData) {
+                                        $("#addComboValuePopup").popup( "close" );
+                                        var id = "#textDynamic_____" + tempCodiceCampo;
+                                        var tempValue = $(id).val();
+                                        FillComboValue(tempCodiceCampo);
+                                        $(id).selectmenu( "refresh" );
+                                        setTimeout(function () {
+                                            $(id).val(tempValue).selectmenu('refresh');
+                                        }, 100);
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                });
+                            });
+
                             $("#addComboValuePopup").popup("open");
                         }
                         else {
                             alert("You can't modify informations: selected item is imported read-only!");
                         }
-                    });
-
-                    $("#addComboValueBtn").unbind('click').bind('click', function () {
-                        $.ajax({
-                            type: 'POST',
-                            url: 'php/addInfoComboValue.php',
-                            data: {
-                                CodiceCampo: tempCodiceCampo,
-                                Valore: $('#textAddInfoComboValue').val()
-                            },
-                            dataType: "json",
-                            success: function (resultData) {
-                                $("#addComboValuePopup").popup( "close" );
-                                var id = "#textDynamic_____" + tempCodiceCampo;
-                                var tempValue = $(id).val();
-                                FillComboValue(tempCodiceCampo);
-                                $(id).selectmenu( "refresh" );
-                                setTimeout(function () {
-                                    $(id).val(tempValue).selectmenu('refresh');
-                                }, 100);
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                alert("Si � verificato un errore.");
-                            }
-                        });
                     });
 
                     $(".salvaImmagineButton[href='" + id2 + "']").unbind('click').bind('click', function (e) {
@@ -3243,9 +3263,8 @@ function CreateSchedeContent(codiceScheda) {
 }
 
 function CreateSchedeVersionContent(codiceScheda) {
-    var id = ".infoOggettoVersionPanelDynamic_" + codiceScheda;
-
     function FillComboValue(codiceCampo) {
+        var id2 = "textVersionDynamic_____" + codiceCampo;
         $.ajax({
             type: 'POST',
             url: 'php/getInfoVersionComboValue.php',
@@ -3258,14 +3277,15 @@ function CreateSchedeVersionContent(codiceScheda) {
                 for (i in resultData2) {
                     combo += " <option value=\"" + resultData2[i].Codice + "\">" + resultData2[i].Value + "</option>";
                 }
-                $("#" + id2).html(combo);
-                //$("#" + id2).val(0).selectmenu('refresh');
+                $("#" + id2).html(combo).selectmenu('refresh');
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert("Si � verificato un errore.");
             }
         });
     }
+
+    var id = ".infoOggettoVersionPanelDynamic_" + codiceScheda;
 
     $.ajax({
         type: 'POST',
@@ -3278,12 +3298,12 @@ function CreateSchedeVersionContent(codiceScheda) {
             for (i in resultData) {
                 var campo = resultData[i].Campo;
                 var codiceCampo = resultData[i].Codice;
-                var id2 = "textVersionDynamic_____" + Codice;
+                var id2 = "textVersionDynamic_____" + resultData[i].Codice;
 
                 if (resultData[i].IsTitle == "t") {
                     $(id).append("<h5 class=\"infoTitle\">" + campo + "</h5>");
                 }
-                if (resultData[i].IsSeparator == "t") {
+                else if (resultData[i].IsSeparator == "t") {
                     $(id).append("<hr>");
                 }
                 else {
@@ -3308,14 +3328,16 @@ function CreateSchedeVersionContent(codiceScheda) {
                         $(id).append("<input type=\"number\" step=\"0.000001\" class=\"infoInputText infoInputNumber\" data-tipo=\"real\" data-codice=\"" + codiceCampo + "\" disabled=\"disabled\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\" data-clear-btn=\"true\" value=\"\">");
                     }
                     else if (resultData[i].IsCombo == "t") {
+                        $(id).append("<a title=\"Aggiungi valore\" href=\"" + id2 + "\" class=\"addValueImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-plus ui-btn-icon-notext\">navigation</a>");
                         $(id).append("<select data-native-menu=\"false\" class=\"infoInputText\" disabled=\"disabled\" data-tipo=\"combo\" data-codice=\"" + codiceCampo + "\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\">");
                         $(id).append("</select>");
-                        //FillComboValue(codiceCampo);
+                        FillComboValue(codiceCampo);
                     }
                     else if (resultData[i].IsMultiCombo == "t") {
+                        $(id).append("<a title=\"Aggiungi valore\" href=\"" + id2 + "\" class=\"addValueImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-plus ui-btn-icon-notext\">navigation</a>");
                         $(id).append("<select data-native-menu=\"false\" class=\"infoInputText\" multiple=\"multiple\" disabled=\"disabled\" data-tipo=\"combo\" data-codice=\"" + codiceCampo + "\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\">");
                         $(id).append("</select>");
-                        //FillComboValue(codiceCampo);
+                        FillComboValue(codiceCampo);
                     }
                     else {
                         if (height > 33) {
@@ -3325,6 +3347,45 @@ function CreateSchedeVersionContent(codiceScheda) {
                             $(id).append("<input type=\"text\" class=\"infoInputText\" data-tipo=\"text\" data-codice=\"" + codiceCampo + "\" disabled=\"disabled\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\" data-clear-btn=\"true\" value=\"\">");
                         }
                     }
+
+                    $(".addValueImmagineButton[href='" + id2 + "']").unbind('click').bind('click', function (e) {
+                        e.preventDefault();
+                        if (_selectedWriteMode) {
+                            var elem = $("#" + this.pathname.substr(1));
+                            tempCodiceCampo = elem[0].dataset.codice;
+                            $("#textAddInfoComboValue").val("");
+
+                            $("#addComboValueBtn").unbind('click').bind('click', function () {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: 'php/addInfoVersionComboValue.php',
+                                    data: {
+                                        CodiceCampo: tempCodiceCampo,
+                                        Valore: $('#textAddInfoComboValue').val()
+                                    },
+                                    dataType: "json",
+                                    success: function (resultData) {
+                                        $("#addComboValuePopup").popup( "close" );
+                                        var id = "#textDynamic_____" + tempCodiceCampo;
+                                        var tempValue = $(id).val();
+                                        FillComboValue(tempCodiceCampo);
+                                        $(id).selectmenu( "refresh" );
+                                        setTimeout(function () {
+                                            $(id).val(tempValue).selectmenu('refresh');
+                                        }, 100);
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                });
+                            });
+
+                            $("#addComboValuePopup").popup("open");
+                        }
+                        else {
+                            alert("You can't modify informations: selected item is imported read-only!");
+                        }
+                    });
 
                     $(".salvaImmagineButton[href='" + id2 + "']").unbind('click').bind('click', function (e) {
                         e.preventDefault();
