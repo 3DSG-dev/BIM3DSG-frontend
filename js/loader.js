@@ -2791,19 +2791,19 @@ function resettaListaImportazione() {
 function resettaVista() {
     var blocchi = _myScene.findNode("block");
     for (var i = blocchi.nodes.length - 1; i > -1; i--) {
-        blocchi.removeNodeAt(i);
+        blocchi.nodes[i].destroy();
     }
     blocchi = _myScene.findNode("MultiTexture");
     for (var i = blocchi.nodes.length - 1; i > -1; i--) {
-        blocchi.removeNodeAt(i);
+        blocchi.nodes[i].destroy();
     }
     var pointCloud = _myScene.findNode("PointCloud");
     for (var i = pointCloud.nodes.length - 1; i > -1; i--) {
-        pointCloud.removeNodeAt(i);
+        pointCloud.nodes[i].destroy();
     }
     var hotSpots = _myScene.findNode("HotSpot");
     for (var i = hotSpots.nodes.length - 1; i > -1; i--) {
-        hotSpots.removeNodeAt(i);
+        hotSpots.nodes[i].destroy();
     }
 }
 
