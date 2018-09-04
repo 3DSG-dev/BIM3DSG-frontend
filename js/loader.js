@@ -39,6 +39,7 @@ var _isTouchRotate = false;
 
 var mittenteUpload;
 
+var maxSubVersion;
 var tempCodiceCampo;
 
 var firstShow = true;
@@ -1257,6 +1258,8 @@ $(document).on("pagecreate", function () {
         $("#addComboValuePopup").popup( "close" );
     });
 
+
+
     $("#slider-r1").on("slidestart", function (event, ui) {
             SetAuxScene();
         })
@@ -1568,6 +1571,7 @@ function SetToolbarEvent(blocchi) {
     $("#resetEye").unbind('click').bind('click', ResetEye);
     $("#renameObject").unbind('click').bind('click', RenameObject);
     $("#deleteObject").unbind('click').bind('click', DeleteObject);
+    $("#addInteventoSubVersion").unbind('click').bind('click', AddInterventoSubVersion);
 }
 
 function MouseDownHandler(event) {
@@ -1874,6 +1878,10 @@ function ResetAllPanels() {
     ResetCategoryVisibility();
     ResetInfoPanel(".infoOggettoPanelAux2");
     ResetInfoPanel(".infoVersionPanelAux2");
+    for (i = 0; i < maxSubVersion; i++) {
+        ResetInfoPanel(".infoSubVersion" + i);
+
+    }
     UpdateImagePanel(0);
     _selectedWriteMode = false;
 }
@@ -2012,6 +2020,42 @@ function ShowHiddenObject() {
             depthFirst: false   // Descend depth-first into tree
         }
     );
+}
+
+// Interventi function
+function AddInterventoSubVersion() {
+    if (confirm("Are you sure to add a new maintenance for subversion to current selected objects?")) {
+        var first = true;
+        var padri = "";
+        $.each(_selectedObjectList, function (index, value) {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                padri += ",";
+            }
+            padri += value.getName().substring(1);
+        });
+
+        $.ajax({
+            url: "./php/addInterventoSubVersion.php",
+            dataType: "json",
+            crossDomain: false,
+            data: {
+                codiciPadri: padri,
+            },
+            success: function (resultData) {
+                alert("Mainteinance added!");
+                UnselectAllObjects();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("Si è verificato un errore.");
+            }
+        });
+
+    }
 }
 
 // information panel functions
@@ -2170,6 +2214,53 @@ function UpdateInfoPanel(codice) {
                 for (i in resultData) {
                     var id = ".infoOggettoVersionPanelDynamic_" + resultData[i].CodiceScheda;
                     $(id).parent().parent().removeClass("HiddenUI").addClass("VisibleUI");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("Si � verificato un errore.");
+            }
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: 'php/getListaSubVersion.php',
+            data: {
+                codice: codice
+            },
+            dataType: "json",
+            success: function (resultData) {
+                for (i in resultData) {
+                    var subVersion = resultData[i].SubVersion;
+                    var id = ".subVersion" + subVersion;
+                    $(id).parent().parent().removeClass("HiddenUI").addClass("VisibleUI");
+                    //id = ".InfoSubVersion" + resultData[i].SubVersion;
+                    //$(id).parent().parent().removeClass("HiddenUI").addClass("VisibleUI");
+                    SetSaveInfoButton(".infoSubVersion" + subVersion);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: 'php/getOggettiSubVersionCategorySchede.php',
+                        subVersion: subVersion,
+                        data: {
+                            categoria: categoria
+                        },
+                        dataType: "json",
+                        success: function (resultData2) {
+                            for (j in resultData2) {
+                                var id = ".infoSubVersion" + this.subVersion + "_PanelDynamic_" + resultData2[j].CodiceScheda;
+                                $(id).parent().parent().removeClass("HiddenUI").addClass("VisibleUI");
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert("Si � verificato un errore.");
+                        }
+                    });
+
+                    if (subVersion < resultData.length - 1)
+                    {
+                        id = ".infoInterventoSubVersion" + subVersion;
+                        $(id).parent().parent().removeClass("HiddenUI").addClass("VisibleUI");
+                    }
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -2367,6 +2458,28 @@ function UpdateInfoPanel(codice) {
             for (i in resultData) {
                 var id = "#textVersionDynamic_____" + resultData[i].CodiceCampo;;
                 var titleId = "#titleInfoVersionPanelDynamic_" + resultData[i].CodiceTitolo;
+
+                SetExpanderColor(titleId);
+                SetDynamicBoxData(resultData[i], id);
+            }
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert("Si � verificato un errore.");
+        }
+    });
+
+    $.ajax({
+        type: 'POST',
+        url: 'php/getInfoSubVersionDynamic.php',
+        data: {
+            codice: codice
+        },
+        dataType: "json",
+        success: function (resultData) {
+            for (i in resultData) {
+                var id = "#textDynamicSubVersion" + resultData[i].SubVersion + "_____" + resultData[i].CodiceCampo;
+                var titleId = "#titleInfoSubVersion" + resultData[i].SubVersion + "_PanelDynamic_" + resultData[i].CodiceTitolo;
 
                 SetExpanderColor(titleId);
                 SetDynamicBoxData(resultData[i], id);
@@ -2911,11 +3024,24 @@ function ResetCategoryVisibility() {
     childs.each(function () {
         $(this).removeClass("VisibleUI").addClass("HiddenUI").collapsible( "collapse" );
     });
+
     childs = $(".infoVersionPanelAux2").children();
     childs.splice(0, 2);
     childs.each(function () {
         $(this).removeClass("VisibleUI").addClass("HiddenUI").collapsible( "collapse" );
     });
+
+    childs = $(".infoSubVersionPanelAux2").children();
+    childs.splice(0, 1);
+    childs.each(function () {
+        $(this).removeClass("VisibleUI").addClass("HiddenUI").collapsible( "collapse" );
+    });
+    for (i = 0; i < maxSubVersion; i++) {
+        $(".infoSubVersion" + i).children().each(function () {
+            $(this).removeClass("VisibleUI").addClass("HiddenUI").collapsible( "collapse" );
+        });
+        $(".infoInterventoSubVersion" + i).parent().parent().removeClass("VisibleUI").addClass("HiddenUI").collapsible( "collapse" );
+    }
 }
 
 function CreateSchede() {
@@ -2924,7 +3050,6 @@ function CreateSchede() {
     childs.find("select").each(function (i, elem) {
         $(this).selectmenu( "destroy" );
     });
-
     childs.each(function () {
         this.remove();
     });
@@ -2945,6 +3070,7 @@ function CreateSchede() {
             alert("Si � verificato un errore.");
         }
     });
+
     childs = $(".infoVersionPanelAux2").children();
     childs.splice(0, 2);
     childs.find("select").each(function (i, elem) {
@@ -2966,6 +3092,39 @@ function CreateSchede() {
 
             $(".infoVersionPanelAux2").trigger("create");
             ///////////////////////////////
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert("Si � verificato un errore.");
+        }
+    });
+
+    childs = $(".infoSubVersionPanelAux2").children();
+    childs.find("select").each(function (i, elem) {
+        $(this).selectmenu( "destroy" );
+    });
+    childs.each(function () {
+        this.remove();
+    });
+    $.ajax({
+        type: 'POST',
+        url: 'php/getMaxSubVersion.php',
+        data: {},
+        dataType: "json",
+        success: function (resultData) {
+            maxSubVersion = parseInt(resultData[0].MaxSubVersion) + 3;
+            for (i = 0; i < maxSubVersion; i++) {
+                $(".infoSubVersionPanelAux2").append("<div data-role=\"collapsible\" data-inset=\"false\" class=\"HiddenUI\"><h5 class=\"infoTitleExpander ui-page-theme-a\" id=\"titleSubVersion" + i + "\">SubVersion " + i + "</h5><div class=\"subVersion" + i + "\"></div></div>");
+                var exp = $(".subVersion" + i);
+                exp.append("<div data-role=\"collapsible\" data-inset=\"false\"><h5 class=\"infoTitleExpander ui-page-theme-a\" id=\"titleInfoSubVersion" + i + "\">SubVersion Information " + i + "</h5><div class=\"infoSubVersion" + i + "\"></div></div>");
+                CreateSchedeSubVersion(i);
+                if (i < maxSubVersion - 1)
+                {
+                    exp.append("<div data-role=\"collapsible\" data-inset=\"false\" class=\"HiddenUI\"><h5 class=\"infoTitleExpander ui-page-theme-a\" id=\"titleInfoInterventoSubVersion" + i + "\">Manteinance Information " + i + "</h5><div class=\"infoInterventoSubVersion" + i + "\"></div></div>");
+                    CreateSchedeContentInterventoSubVersion(i);
+                }
+                //exp.trigger("create");
+            }
+            $(".infoSubVersionPanelAux2").trigger("create");
         },
         error: function (jqXHR, textStatus, errorThrown) {
             alert("Si � verificato un errore.");
@@ -3547,6 +3706,340 @@ function CreateSchedeVersionContent(codiceScheda) {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             alert("Si � verificato un errore.");
+        }
+    });
+}
+
+function CreateSchedeSubVersion(subVersion) {
+    var id = ".infoSubVersion" + subVersion;
+
+    $.ajax({
+        type: 'POST',
+        url: 'php/getListaSchedeSubVersion.php',
+        data: {},
+        dataType: "json",
+        success: function (resultData) {
+            for (i in resultData) {
+                $(id).append("<div data-role=\"collapsible\" data-inset=\"false\" class=\"HiddenUI\"><h5 class=\"infoTitleExpander ui-page-theme-a\" id=\"titleInfoSubVersion" + subVersion + "_PanelDynamic_" + resultData[i].Codice+ "\">" + resultData[i].Titolo + "</h5><div class=\"infoSubVersion" + subVersion + "_PanelDynamic_" + resultData[i].Codice + "\"></div></div>");
+                CreateSchedeContentSubVersion(subVersion, resultData[i].Codice);
+            }
+            $(id).trigger("create");
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert("Si � verificato un errore.");
+        }
+    });
+}
+
+function CreateSchedeContentSubVersion(subVersion, codiceScheda) {
+    function FillComboValue(subVersion, codiceCampo) {
+        var id2 = "textDynamicSubVersion" + subVersion + "_____" + codiceCampo;
+        $.ajax({
+            type: 'POST',
+            url: 'php/getInfoComboValueSubVersion.php',
+            data: {
+                CodiceCampo: codiceCampo
+            },
+            dataType: "json",
+            success: function (resultData2) {
+                var combo = "<option value='0'>-</option>";
+                for (i in resultData2) {
+                    combo += " <option value=\"" + resultData2[i].Codice + "\">" + resultData2[i].Value + "</option>";
+                }
+                $("#" + id2).html(combo).selectmenu('refresh');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("Si � verificato un errore.");
+            }
+        });
+    }
+
+    var id = ".infoSubVersion" + subVersion + "_PanelDynamic_" + codiceScheda;
+
+    $.ajax({
+        type: 'POST',
+        url: 'php/getListaInformazioniSubVersion.php',
+        data: {
+            CodiceTitolo: codiceScheda
+        },
+        dataType: "json",
+        success: function (resultData) {
+            for (i in resultData) {
+                var campo = resultData[i].Campo;
+                var codiceCampo = resultData[i].Codice;
+                var id2 = "textDynamicSubVersion" + subVersion + "_____" + resultData[i].Codice;
+
+                if (resultData[i].IsTitle == "t") {
+                    $(id).append("<h5 class=\"infoTitle\">" + campo + "</h5>");
+                }
+                else if (resultData[i].IsSeparator == "t") {
+                    $(id).append("<hr>");
+                }
+                else {
+                    var height = 33 * resultData[i].Height / 22;
+
+                    $(id).append("<a title=\"Salva\" href=\"" + id2 + "\" class=\"salvaImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-check ui-btn-icon-notext hide\">navigation</a>");
+                    if (resultData[i].IsCombo == "t") {
+                    }
+                    $(id).append("<label for=\"" + id2 + "\" class=\"infoLabel\">" + campo + "</label>");
+                    if (resultData[i].IsBool == "t") {
+                        $(id).append("<input type=\"checkbox\" class=\"infoInputText\" data-tipo=\"checkbox\" data-codice=\"" + codiceCampo + "\" data-subversion=\"" + subVersion + "\" disabled=\"disabled\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\" value=\"\">");
+                    }
+                    else if (resultData[i].IsLink == "t") {
+                        $(id).append("<input type=\"checkbox\" class=\"infoInputText\" data-tipo=\"link\" data-codice=\"" + codiceCampo + "\" data-subversion=\"" + subVersion + "\" disabled=\"disabled\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\" value=\"\">");
+                    }
+                    else if (resultData[i].IsTimestamp == "t") {
+                        $(id).append("<input type=\"text\" class=\"infoInputText\" data-tipo=\"timestamp\" data-codice=\"" + codiceCampo + "\" data-subversion=\"" + subVersion + "\" disabled=\"disabled\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\" data-clear-btn=\"true\" value=\"\">");
+                        $("#" + id2).datetimepicker();
+                    }
+                    else if (resultData[i].IsInt == "t") {
+                        $(id).append("<input type=\"number\" class=\"infoInputText infoInputNumber\" data-tipo=\"int\" data-codice=\"" + codiceCampo + "\" data-subversion=\"" + subVersion + "\" disabled=\"disabled\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\" data-clear-btn=\"true\" value=\"\">");
+                    }
+                    else if (resultData[i].IsReal == "t") {
+                        $(id).append("<input type=\"number\" step=\"0.000001\" class=\"infoInputText infoInputNumber\" data-tipo=\"real\" data-codice=\"" + codiceCampo + "\" data-subversion=\"" + subVersion + "\" disabled=\"disabled\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\" data-clear-btn=\"true\" value=\"\">");
+                    }
+                    else if (resultData[i].IsCombo == "t") {
+                        $(id).append("<a title=\"Aggiungi valore\" href=\"" + id2 + "\" class=\"addValueImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-plus ui-btn-icon-notext\">navigation</a>");
+                        $(id).append("<select data-native-menu=\"false\" class=\"infoInputText\" disabled=\"disabled\" data-tipo=\"combo\" data-codice=\"" + codiceCampo + "\" data-subversion=\"" + subVersion + "\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\">");
+                        $(id).append("</select>");
+                        FillComboValue(subVersion, codiceCampo);
+                    }
+                    else if (resultData[i].IsMultiCombo == "t") {
+                        $(id).append("<a title=\"Aggiungi valore\" href=\"" + id2 + "\" class=\"addValueImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-plus ui-btn-icon-notext\">navigation</a>");
+                        $(id).append("<select data-native-menu=\"false\" class=\"infoInputText\" multiple=\"multiple\" disabled=\"disabled\" data-tipo=\"multicombo\" data-codice=\"" + codiceCampo + "\" data-subversion=\"" + subVersion + "\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\">");
+                        $(id).append("</select>");
+                        FillComboValue(subVersion, codiceCampo);
+                    }
+                    else {
+                        if (height > 33) {
+                            $(id).append("<textarea class=\"infoInputText\" data-tipo=\"text\" data-codice=\"" + codiceCampo + "\" data-subversion=\"" + subVersion + "\" disabled=\"disabled\" name=\"" + id2 + "\" id=\"" + id2 + "\" data-clear-btn=\"true\" value=\"\"></textarea>");
+                        }
+                        else {
+                            $(id).append("<input type=\"text\" class=\"infoInputText\" data-tipo=\"text\" data-codice=\"" + codiceCampo + "\" data-subversion=\"" + subVersion + "\" disabled=\"disabled\" name=\"" + id2 + "\" id=\"" + id2 + "\" style=\"height: " + height + "px\" data-clear-btn=\"true\" value=\"\">");
+                        }
+                    }
+
+                    $(".addValueImmagineButton[href='" + id2 + "']").unbind('click').bind('click', function (e) {
+                        e.preventDefault();
+                        if (_selectedWriteMode) {
+                            var elem = $("#" + this.pathname.substr(1));
+                            tempCodiceCampo = elem[0].dataset.codice;
+                            $("#textAddInfoComboValue").val("");
+
+                            $("#addComboValueBtn").unbind('click').bind('click', function () {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: 'php/addInfoSubVersionComboValue.php',
+                                    data: {
+                                        CodiceCampo: tempCodiceCampo,
+                                        Valore: $('#textAddInfoComboValue').val()
+                                    },
+                                    dataType: "json",
+                                    success: function (resultData) {
+                                        $("#addComboValuePopup").popup( "close" );
+                                        for (i = 0; i < maxSubVersion; i++) {
+                                            var id = "#textDynamicSubVersion" + i + "_____" + tempCodiceCampo;
+                                            var tempValue = $(id).val();
+                                            FillComboValue(i, tempCodiceCampo);
+                                            $(id).selectmenu("refresh");
+                                            setTimeout(function () {
+                                                $(id).val(tempValue).selectmenu('refresh');
+                                            }, 100);
+                                        }
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                });
+                            });
+
+                            $("#addComboValuePopup").popup("open");
+                        }
+                        else {
+                            alert("You can't modify informations: selected item is imported read-only!");
+                        }
+                    });
+
+                    $(".salvaImmagineButton[href='" + id2 + "']").unbind('click').bind('click', function (e) {
+                        e.preventDefault();
+                        var elem = $("#" + this.pathname.substr(1));
+                        var btn = $(this);
+
+                        if (_selectedWriteMode) {
+                            if (elem[0].dataset.tipo == "text") {
+                                $.ajax({
+                                    url: "./php/setInfoOggettoSubVersionText.php",
+                                    dataType: "json",
+                                    crossDomain: false,
+                                    data: {
+                                        codiceOggetto: $('#textCodice').val(),
+                                        codiceCampo: elem[0].dataset.codice,
+                                        subVersion: elem[0].dataset.subversion,
+                                        valore: elem.val().replace(/'/g, "''")
+                                    },
+                                    success: function (resultData) {
+                                        btn.removeClass("ui-btn-active");
+                                        btn.css('visibility', 'collapse');
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                })
+                            }
+                            else if (elem[0].dataset.tipo == "real") {
+                                $.ajax({
+                                    url: "./php/setInfoOggettoSubVersionReal.php",
+                                    dataType: "json",
+                                    crossDomain: false,
+                                    data: {
+                                        codiceOggetto: $('#textCodice').val(),
+                                        codiceCampo: elem[0].dataset.codice,
+                                        subVersion: elem[0].dataset.subversion,
+                                        valore: elem.val()
+                                    },
+                                    success: function (resultData) {
+                                        btn.removeClass("ui-btn-active");
+                                        btn.css('visibility', 'collapse');
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                })
+                            }
+                            else if (elem[0].dataset.tipo == "int") {
+                                $.ajax({
+                                    url: "./php/setInfoOggettoSubVersionInt.php",
+                                    dataType: "json",
+                                    crossDomain: false,
+                                    data: {
+                                        codiceOggetto: $('#textCodice').val(),
+                                        codiceCampo: elem[0].dataset.codice,
+                                        subVersion: elem[0].dataset.subversion,
+                                        valore: elem.val()
+                                    },
+                                    success: function (resultData) {
+                                        btn.removeClass("ui-btn-active");
+                                        btn.css('visibility', 'collapse');
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                })
+                            }
+                            else if (elem[0].dataset.tipo == "timestamp") {
+                                $.ajax({
+                                    url: "./php/setInfoOggettoSubVersionTimestamp.php",
+                                    dataType: "json",
+                                    crossDomain: false,
+                                    data: {
+                                        codiceOggetto: $('#textCodice').val(),
+                                        codiceCampo: elem[0].dataset.codice,
+                                        subVersion: elem[0].dataset.subversion,
+                                        valore: elem.val()
+                                    },
+                                    success: function (resultData) {
+                                        btn.removeClass("ui-btn-active");
+                                        btn.css('visibility', 'collapse');
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                })
+                            }
+                            else if (elem[0].dataset.tipo == "combo") {
+                                $.ajax({
+                                    url: "./php/setInfoOggettoSubVersionCombo.php",
+                                    dataType: "json",
+                                    crossDomain: false,
+                                    data: {
+                                        codiceOggetto: $('#textCodice').val(),
+                                        codiceCampo: elem[0].dataset.codice,
+                                        subVersion: elem[0].dataset.subversion,
+                                        valore: elem.val() == 0 ? null : elem.val()
+                                    },
+                                    success: function (resultData) {
+                                        btn.removeClass("ui-btn-active");
+                                        btn.css('visibility', 'collapse');
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                })
+                            }
+                            else if (elem[0].dataset.tipo == "multicombo") {
+                                $.ajax({
+                                    url: "./php/setInfoOggettoSubVersionMultiCombo.php",
+                                    dataType: "json",
+                                    crossDomain: false,
+                                    data: {
+                                        codiceOggetto: $('#textCodice').val(),
+                                        codiceCampo: elem[0].dataset.codice,
+                                        subVersion: elem[0].dataset.subversion,
+                                        valore: elem.val() == 0 ? null : elem.val().join('_')
+                                    },
+                                    success: function (resultData) {
+                                        btn.removeClass("ui-btn-active");
+                                        btn.css('visibility', 'collapse');
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                })
+                            }
+                            else if (elem[0].dataset.tipo == "checkbox" || elem[0].dataset.tipo == "link") {
+                                $.ajax({
+                                    url: "./php/setInfoOggettoSubVersionCheckbox.php",
+                                    dataType: "json",
+                                    crossDomain: false,
+                                    data: {
+                                        codiceOggetto: $('#textCodice').val(),
+                                        codiceCampo: elem[0].dataset.codice,
+                                        subVersion: elem[0].dataset.subversion,
+                                        valore: elem.prop("checked")
+                                    },
+                                    success: function (resultData) {
+                                        btn.removeClass("ui-btn-active");
+                                        btn.css('visibility', 'collapse');
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        alert("Si � verificato un errore.");
+                                    }
+                                })
+                            }
+                        }
+                        else {
+                            alert("You can't modify informations: selected item is imported read-only!");
+                        }
+                    });
+                }
+            }
+
+            $(id).trigger("create");
+            $(id).find("input").each(function (i, elem) {
+                if ($(this).hasClass("infoInputNumber")) {
+                    var btn = $(this).parent().children()[1];
+                    $(btn).css('margin-right', '22px');
+                }
+            });
+
+            ///////////////////////////////
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert("Si � verificato un errore.");
+        }
+    });
+}
+
+function CreateSchedeContentInterventoSubVersion(i) {
+    var id = ".infoInterventoSubVersion" + i;
+
+
+
+    $(id).trigger("create");
+    $(id).find("input").each(function (i, elem) {
+        if ($(this).hasClass("infoInputNumber")) {
+            var btn = $(this).parent().children()[1];
+            $(btn).css('margin-right', '22px');
         }
     });
 }

@@ -147,7 +147,7 @@ include("php/auth.php");
         </div>
     </div><!-- /panel -->
 
-    <div data-role="panel" id="infoOggettoPanel" data-display="overlay" data-dismissible="false">
+    <div data-role="panel" id="infoOggettoPanel" data-display="overlay" data-dismissible="false" style="width: 300px;">
         <div id="infoOggettoPanelAux">
             <div data-role="collapsible" data-inset="false" id="infoOggettoPanelCollapsible" data-collapsed="true">
                 <h4>Object Information</h4>
@@ -278,6 +278,12 @@ include("php/auth.php");
                 </div>
             </div>
 
+            <div data-role="collapsible" data-inset="false" id="infoSubVersionPanelCollapsible" data-collapsed="true">
+                <h4>SubVersion Information</h4>
+                <div class="infoSubVersionPanelAux2">
+                </div>
+            </div>
+
             <div data-role="collapsible" data-inset="false" id="infoCategoryCollapsible" data-collapsed="false">
                 <h4>Category</h4>
                 <a title="Salva" href="CategoryCombo" class="salvaImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-check ui-btn-icon-notext hide">navigation</a>
@@ -384,6 +390,10 @@ include("php/auth.php");
                class="ui-btn-double-size ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-star ui-btn-icon-notext <?php if (!isset($_SESSION['validUser'])) {
                    echo "hide";
                } ?>">edit</a>
+            <a id="addInteventoSubVersion" title="Aggiunge un-intervento sulla subversion"
+               class="ui-btn-double-size ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-plus ui-btn-icon-notext <?php if (!isset($_SESSION['validUser'])) {
+                   echo "hide";
+               } ?>">plus</a>
         </div>
 
     </div><!-- /header -->
