@@ -1954,6 +1954,19 @@ function RemoveUnselected() {
         }
     );
 
+    var multitexture = _myScene.findNode("MultiTexture");
+    multitexture.eachNode(
+        function () {
+            if (jQuery.inArray(this, _selectedObjectList) == -1) {
+                this.node(0).setEnabled(false);
+            }
+        },
+        {
+            andSelf: false,     // Visit our myLookat node as well
+            depthFirst: false   // Descend depth-first into tree
+        }
+    );
+
     var pointCloud = _myScene.findNode("PointCloud");
     pointCloud.eachNode(
         function () {
@@ -1995,6 +2008,19 @@ function ShowHiddenObject() {
         }
     );
 
+    var multitexture = _myScene.findNode("MultiTexture");
+    multitexture.eachNode(
+        function () {
+            if (!this.node(0).getEnabled()) {
+                this.node(0).setEnabled(true);
+            }
+        },
+        {
+            andSelf: false,     // Visit our myLookat node as well
+            depthFirst: false   // Descend depth-first into tree
+        }
+    );
+
     var pointCloud = _myScene.findNode("PointCloud");
     pointCloud.eachNode(
         function () {
@@ -2011,7 +2037,7 @@ function ShowHiddenObject() {
     var hotSpots = _myScene.findNode("HotSpot");
     hotSpots.eachNode(
         function () {
-            if (!this.node(0).node(0)   .getEnabled()) {
+            if (!this.node(0).node(0).getEnabled()) {
                 this.node(0).node(0).setEnabled(true);
             }
         },
