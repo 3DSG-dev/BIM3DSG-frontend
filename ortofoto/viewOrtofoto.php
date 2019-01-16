@@ -1,5 +1,5 @@
 <?php
-include("/php/auth.php");
+include("../php/auth.php");
 $image=isset($_GET['immagine'])?$_GET['immagine']:$_POST['immagine'];
 ?>
 

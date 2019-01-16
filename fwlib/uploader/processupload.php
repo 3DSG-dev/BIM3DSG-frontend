@@ -9,8 +9,6 @@ set_time_limit(0);
 //var_dump($_POST);
 //die();
 
-
-
 if(isset($_FILES["FileInput"]) && $_FILES["FileInput"]["error"]== UPLOAD_ERR_OK)
 {
 	############ Edit settings ##############
