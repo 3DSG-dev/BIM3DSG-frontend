@@ -11,7 +11,7 @@ include("php/auth.php");
     <meta charset="iso-8859-15">
     <link rel="stylesheet" type="text/css" href="//code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css"/>
 
-    <script> var dbName = '<?php echo $_SESSION["dbName"] . '/' . $image;?>';</script>
+    <script> var dbName = '<?php echo $_SESSION["dbName"];?>';</script>
     <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="fwlib/uploader/js/jquery.form.min.js"></script>
     <script type="text/javascript" src="//code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>

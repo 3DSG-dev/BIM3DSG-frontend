@@ -23,8 +23,7 @@ module.exports = function (grunt) {
                 'Gruntfile.js',
                 'js/cors/*.js',
                 'js/*.js',
-                'server/node/server.js',
-                'test/test.js'
+                'server/node/server.js'
             ]
         }
     });
