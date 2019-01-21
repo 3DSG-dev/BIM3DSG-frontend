@@ -23,7 +23,7 @@ function checkUser()
 		$result1 = pg_query($dbconn, $SQL) or die ("Error: $SQL");
 		while($tmp = pg_fetch_array($result1, NULL, PGSQL_ASSOC))
 		{
-			if ($tmp[count]==1)
+			if ($tmp['count']==1)
 			{
 				$_SESSION['validUser']=1;				
 				$_SESSION['validUserName']=$user;
