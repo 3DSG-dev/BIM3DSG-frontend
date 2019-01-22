@@ -556,6 +556,8 @@ function SceneClickHandler(coords) {
                 UpdateInfoPanel(codice);
 
                 UpdateImagePanel(codice);
+
+                UpdateFilePanel(codice);
             }
             else {
                 UnselectObject(pickedObject);
@@ -969,6 +971,10 @@ $(document).on("pagecreate", function () {
         $('#aggiungiImmaginePopup').popup("close");
     });
 
+    $('#cancelUploadFileBtn').unbind('click').bind('click', function () {
+        $('#aggiungiFilePopup').popup("close");
+    });
+
     $('#MyUploadForm').unbind('submit').bind('submit', function () {
         //$('#MyUploadForm').submit(function () {
         var today = new Date();
@@ -1013,6 +1019,53 @@ $(document).on("pagecreate", function () {
 
 
         $(this).ajaxSubmit(options);
+        // always return false to prevent standard browser submit and page navigation
+        return false;
+    });
+
+    $('#FileUploadForm').unbind('submit').bind('submit', function () {
+        //$('#MyUploadForm').submit(function () {
+        var today = new Date();
+        var year = today.getFullYear();
+        var month = today.getMonth() + 1;
+        var day = today.getDate();
+
+        try {
+            year = data.files[index].lastModifiedDate.getFullYear();
+            month = data.files[index].lastModifiedDate.getMonth() + 1;
+            day = data.files[index].lastModifiedDate.getDate();
+        }
+        catch (err) {
+        }
+        var str = "" + month;
+        var pad = "00";
+        month = pad.substring(0, pad.length - str.length) + str;
+        str = "" + day;
+        day = pad.substring(0, pad.length - str.length) + str;
+
+        $('#mittenteFile').val(mittenteUpload);
+        if (mittenteUpload == 11) {
+            $('#codiceFileOggetto').val($('#textCodice').val());
+            $('#URLFile').val("./" + $('#textLayer0').val() + "/" + $('#textLayer1').val() + "/" + $('#textLayer2').val() + "/" + $('#textLayer3').val() + "/" + $('#textName').val() + "/");
+        }
+        else if (mittenteUpload == 12) {
+            $('#codiceFileOggetto').val($('#textCodiceVersione').val());
+            $('#URLFile').val("./" + $('#textLayer0').val() + "/" + $('#textLayer1').val() + "/" + $('#textLayer2').val() + "/" + $('#textLayer3').val() + "/" + $('#textName').val() + "/");
+        }
+        else {
+            return false;
+        }
+        $('#dataInsFile').val("" + year + "-" + month + "-" + day + "");
+
+        var options2 = {
+            target: '#outputFile',   // target element(s) to be updated with server response
+            beforeSubmit: beforeSubmitFile,  // pre-submit callback
+            success: afterSuccessFile,  // post-submit callback
+            uploadProgress: OnProgressFile, //upload progress callback
+            resetForm: true        // reset the form after successful submit
+        };
+
+        $(this).ajaxSubmit(options2);
         // always return false to prevent standard browser submit and page navigation
         return false;
     });
@@ -1883,6 +1936,7 @@ function ResetAllPanels() {
 
     }
     UpdateImagePanel(0);
+    UpdateFilePanel(0);
     _selectedWriteMode = false;
 }
 
@@ -2757,7 +2811,7 @@ function RemoveObjectImage(codice, url) {
         },
         dataType: "text",
         success: function (resultData) {
-            UpdateImagePanel($(this).data("rifpz"));
+            UpdateImagePanel(codice);
             alert("Immagine rimossa.");
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -2911,6 +2965,226 @@ function SaveInfoImage(btn, elem) {
         alert("The object must be imported in write mode!");
     }
 }
+
+// file panel functions
+
+function UpdateFilePanel(codice) {
+    $.ajax({
+        type: 'POST',
+        url: 'php/getElencoFileSoloOggetto.php',
+        data: {
+            codice: "" + codice + ""
+        },
+        dataType: "json",
+        success: function (resultData) {
+            var index;
+            var html = '';
+            var html2 = '';
+
+            $(".fileOggetto").remove();
+
+            html += '<div style="position: relative">';
+            html += '<label class="aggiungiFileLabel">Object Files</label>';
+            html += '<a id="objectFile" title="Add a file to the object..." href="" class="aggiungiFileButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-plus ui-btn-icon-notext <?php if(!isset($_SESSION[\'validUser\'])) {echo "hide";}?>">navigation</a>';
+            html += '</div>';
+            for (index = 0; index < resultData.length; ++index) {
+                html += '<div class="fileLinkContainer">';
+                html += '<a class="fileLink" target="_blank" href="./php/getFileOggetto.php?codice=' + codice + '&url=' + encodeURIComponent(resultData[index].URL) + '" data-riftype="oggetto" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData[index].URL) + '">' + resultData[index].URL + '</a>';
+                html += '<a title="Delete file..." data-riftype="oggetto" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData[index].URL) + '" href="" class="rimuoviFileButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-minus ui-btn-icon-notext <?php if(!isset($_SESSION[\'validUser\'])) {echo "hide";}?>">navigation</a>';
+                html += '</div>'
+            }
+            $.ajax({
+                type: 'POST',
+                url: 'php/getElencoFileSoloVersione.php',
+                data: {
+                    codice: "" + codice + ""
+                },
+                dataType: "json",
+                success: function (resultData2) {
+                    html += '<div style="position: relative">';
+                    html += '<label class="aggiungiFileLabel">Version Files</label>';
+                    html += '<a id="versionFile" title="Add a file to the version of the object..." href="" class="aggiungiFileButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-plus ui-btn-icon-notext <?php if(!isset($_SESSION[\'validUser\'])) {echo "hide";}?>">navigation</a>';
+                    html += '</div>';
+                    for (index = 0; index < resultData2.length; ++index) {
+                        html += '<div class="thumbContainer">';
+                        html += '<a class="fileLink" target="_blank" href="./php/getFileVersion.php?codice=' + codice + '&url=' + encodeURIComponent(resultData2[index].URL) + '" data-riftype="versione" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData2[index].URL) + '"">' + resultData2[index].URL + '</a>';
+                        html += '<a title="Delete file..." data-riftype="versione" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData2[index].URL) + '" href="" class="rimuoviFileButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-minus ui-btn-icon-notext <?php if(!isset($_SESSION[\'validUser\'])) {echo "hide";}?>">navigation</a>';
+                        html += '</div>'
+                    }
+
+                    $("#fileOggettoPanelAux2").html(html + html2);
+
+                    SetFilesEvents();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Si � verificato un errore.");
+                }
+            });
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert("Si � verificato un errore.");
+        }
+    });
+
+}
+
+function SetFilesEvents() {
+    function RemoveFile(file) {
+        function RemoveObjectFile(codice, url) {
+            $.ajax({
+                type: 'POST',
+                url: 'php/removeFileOggetto.php',
+                data: {
+                    codiceOggetto: codice,
+                    URL: decodeURIComponent(url)
+                },
+                dataType: "text",
+                success: function (resultData) {
+                    UpdateFilePanel(codice);
+                    alert("File rimosso.");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Si è verificato un errore.");
+                }
+            });
+        }
+
+        function RemoveVersionFile(codice, url) {
+            $.ajax({
+                type: 'POST',
+                url: 'php/removeFileVersione.php',
+                data: {
+                    codiceVersione: codice,
+                    URL: "" + decodeURIComponent(url)
+                },
+                dataType: "text",
+                success: function (resultData) {
+                    UpdateFilePanel(codice);
+                    alert("File rimosso.");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Si è verificato un errore.");
+                }
+            });
+        }
+
+        if (_selectedWriteMode) {
+            if (confirm('Eliminare il file selezionato?')) {
+                if (decodeURIComponent(file.data("riftype")) == "oggetto") {
+                    RemoveObjectFile(file.data("rifpz"), file.data("rifurl"));
+                }
+                else if (decodeURIComponent(file.data("riftype")) == "versione") {
+                    RemoveVersionFile(file.data("rifpz"), file.data("rifurl"));
+                }
+                else {
+                    alert("Si � verificato un errore.")
+                }
+            }
+        }
+        else {
+            alert("The object must be imported in write mode!");
+        }
+    }
+
+    $("#objectFile").unbind().bind("click", function (event) {
+        event.preventDefault();
+        mittenteUpload = 11;
+        if (_selectedWriteMode) {
+            $("#aggiungiFilePopup").popup("open");
+        }
+        else {
+            alert("The object must be imported in write mode!");
+        }
+    });
+    $("#versionFile").unbind().bind("click", function (event) {
+        event.preventDefault();
+        mittenteUpload = 12;
+        if (_selectedWriteMode) {
+            $("#aggiungiFilePopup").popup("open");
+        }
+        else {
+            alert("The object must be imported in write mode!");
+        }
+    });
+
+    $(".rimuoviFileButton").unbind().bind("click", function (event) {
+        event.preventDefault();
+
+        RemoveFile($(this));
+    });
+}
+
+//function after successful file upload (when server response)
+function afterSuccessFile() {
+    $('#submitFile-btn').show(); //hide submit button
+    $('#loadingFile-img').hide(); //hide submit button
+    $('#progressboxFile').delay(1000).fadeOut(); //hide progress bar
+
+    UpdateFilePanel($('#textCodice').val());
+}
+
+//function to check file size before uploading.
+function beforeSubmitFile() {
+    //check whether browser fully supports all File API
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+        if (!$('#FileInputFile').val()) //check empty input filed
+        {
+            $("#outputFile").html("Are you kidding me?");
+            return false
+        }
+
+        var fsize = $('#FileInputFile')[0].files[0].size; //get file size
+        var ftype = $('#FileInputFile')[0].files[0].type; // get file type
+
+
+        //allow file types
+/*        switch (ftype) {
+            case 'image/png':
+            case 'image/gif':
+            case 'image/jpeg':
+            case 'image/pjpeg':
+                //case 'text/plain':
+                //case 'text/html':
+                //case 'application/x-zip-compressed':
+                //case 'application/pdf':
+                //case 'application/msword':
+                //case 'application/vnd.ms-excel':
+                //case 'video/mp4':
+                break;
+            default:
+                $("#output").html("<b>" + ftype + "</b> Unsupported file type!");
+                return false
+        }*/
+
+        //Allowed file size is less than 5 MB (1048576)
+        if (fsize > 15728640) {
+            $("#output").html("<b>" + bytesToSize(fsize) + "</b> Too big file! <br />File is too big, it should be less than 12 MB.");
+            return false
+        }
+
+        $('#submitFile-btn').hide(); //hide submit button
+        $('#loadingFile-img').show(); //hide submit button
+        $("#outputFile").html("");
+    }
+    else {
+        //Output error to older unsupported browsers that doesn't support HTML5 File API
+        $("#outputFile").html("Please upgrade your browser, because your current browser lacks some new features we need!");
+        return false;
+    }
+}
+
+//progress bar function
+function OnProgressFile(event, position, total, percentComplete) {
+    //Progress bar
+    $('#progressboxFile').show();
+    $('#progressbarFile').width(percentComplete + '%'); //update progressbar percent complete
+    $('#statustxtFile').html(percentComplete + '%'); //update status text
+    if (percentComplete > 50) {
+        $('#statustxtFile').css('color', '#000'); //change status text to white after 50%
+    }
+}
+
 
 // reset functions
 function resettaListaImportazione() {

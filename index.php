@@ -314,6 +314,15 @@ include("php/auth.php");
             </div>
         </div>
     </div>
+
+    <div data-role="panel" id="fileOggettoPanel" data-display="overlay" data-dismissible="false"
+         data-position="right">
+        <div id="fileOggettoPanelAux">
+            <div id="fileOggettoPanelAux2">
+            </div>
+        </div>
+    </div>
+
     <div data-role="header">
         <div id="mainMenuContainer">
 
@@ -333,6 +342,10 @@ include("php/auth.php");
                } ?>">info</a>
             <a href="#immaginiOggettoPanel" title="Immagini relative all'oggetto selezionato"
                class="ui-btn-double-size ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-camera ui-btn-icon-notext <?php if (!isset($_SESSION['validUser'])) {
+                   echo "hide";
+               } ?>">info</a>
+            <a href="#fileOggettoPanel" title="Files relativi all'oggetto selezionato"
+               class="ui-btn-double-size ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-mail ui-btn-icon-notext <?php if (!isset($_SESSION['validUser'])) {
                    echo "hide";
                } ?>">info</a>
             <a id="editToolbar" title="Visualizza la toolbar di editing"
@@ -430,6 +443,33 @@ include("php/auth.php");
                             <div id="statustxt">0%</div>
                         </div>
                         <div id="output"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-role="popup" id="aggiungiFilePopup" data-theme="a" class="ui-corner-all" data-dismissible="false">
+            <div id="aggiungiFilePopupInside">
+                <div id="upload-wrapper">
+                    <div align="center">
+                        <h3>Upload File</h3>
+                        <form action="fwlib/uploader/processFileUpload.php" method="post" enctype="multipart/form-data"
+                              id="FileUploadForm">
+                            <input name="FileInputFile" id="FileInputFile" type="file"/>
+                            <input type="submit" id="submitFile-btn" value="Upload"/>
+                            <input type="button" id="cancelUploadFileBtn" value="Chiudi"/>
+                            <input type="hidden" id="codiceFileOggetto" name="codiceFileOggetto" value=""/>
+                            <input type="hidden" id="codiceFileIntervento" name="codiceFileIntervento" value=""/>
+                            <input type="hidden" id="mittenteFile" name="mittenteFile" value=""/>
+                            <input type="hidden" id="URLFile" name="URLFile" value=""/>
+                            <input type="hidden" id="dataInsFile" name="dataInsFile" value=""/>
+                            <img src="fwlib/uploader/images/ajax-loader.gif" id="loadingFile-img" style="display:none;"
+                                 alt="Please Wait"/>
+                        </form>
+                        <div id="progressboxFile">
+                            <div id="progressbarFile"></div>
+                            <div id="statustxtFile">0%</div>
+                        </div>
+                        <div id="outputFile"></div>
                     </div>
                 </div>
             </div>

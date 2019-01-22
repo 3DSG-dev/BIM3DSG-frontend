@@ -135,26 +135,42 @@
     padding: 0;
 }
 
-.aggiungiImmagineLabel {
+.aggiungiImmagineLabel, .aggiungiFileLabel {
     line-height: 28px;
     width: 200px;
 }
 
-.aggiungiImmagineButton, .aggiungiScreenshotButton {
+.aggiungiImmagineButton, .aggiungiScreenshotButton, .aggiungiFileButton {
     position: absolute;
     margin: 0px;
     top: 0px;
     right: 0px;
 }
 
+a.fileLink {
+    font-size: 10pt;
+}
+
 .thumbContainer {
     position: relative;
+}
+
+.fileLinkContainer {
+    position: relative;
+    margin-bottom: 8px;
 }
 
 .rimuoviImmagineButton {
     position: absolute;
     margin: 0px;
     top: 0px;
+    right: 0px;
+}
+
+.rimuoviFileButton {
+    position: absolute;
+    margin: 0px;
+    top: -4px;
     right: 0px;
 }
 
@@ -393,7 +409,7 @@ button.creditInfoPopupButtons {
     color: white;
 }
 
-.aggiungiImmagineLabel {
+.aggiungiImmagineLabel, .aggiungiFileLabel {
     line-height: 28px;
     width: 200px;
 }
