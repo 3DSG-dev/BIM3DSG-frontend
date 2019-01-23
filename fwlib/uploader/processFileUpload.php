@@ -29,7 +29,7 @@ if(isset($_FILES["FileInputFile"]) && $_FILES["FileInputFile"]["error"]== UPLOAD
 	
 	
 	//Is file size is less than allowed size.
-	if ($_FILES["FileInput"]["size"] > 15728640) {
+	if ($_FILES["FileInput"]["size"] > 33554432) {
 		die("File size is too big!");
 	}
 	

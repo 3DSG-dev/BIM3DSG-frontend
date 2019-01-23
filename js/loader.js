@@ -2990,7 +2990,7 @@ function UpdateFilePanel(codice) {
             for (index = 0; index < resultData.length; ++index) {
                 html += '<div class="fileLinkContainer">';
                 html += '<a class="fileLink" target="_blank" href="./php/getFileOggetto.php?codice=' + codice + '&url=' + encodeURIComponent(resultData[index].URL) + '" data-riftype="oggetto" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData[index].URL) + '">' + resultData[index].URL + '</a>';
-                html += '<a title="Delete file..." data-riftype="oggetto" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData[index].URL) + '" href="" class="rimuoviFileButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-minus ui-btn-icon-notext <?php if(!isset($_SESSION[\'validUser\'])) {echo "hide";}?>">navigation</a>';
+                html += '<a title="Delete file..." data-riftype="oggetto" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData[index].URL) + '" href="" class="rimuoviFileButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-minus ui-btn-icon-notext">navigation</a>';
                 html += '</div>'
             }
             $.ajax({
@@ -3006,9 +3006,9 @@ function UpdateFilePanel(codice) {
                     html += '<a id="versionFile" title="Add a file to the version of the object..." href="" class="aggiungiFileButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-plus ui-btn-icon-notext <?php if(!isset($_SESSION[\'validUser\'])) {echo "hide";}?>">navigation</a>';
                     html += '</div>';
                     for (index = 0; index < resultData2.length; ++index) {
-                        html += '<div class="thumbContainer">';
+                        html += '<div class="fileLinkContainer">';
                         html += '<a class="fileLink" target="_blank" href="./php/getFileVersion.php?codice=' + codice + '&url=' + encodeURIComponent(resultData2[index].URL) + '" data-riftype="versione" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData2[index].URL) + '"">' + resultData2[index].URL + '</a>';
-                        html += '<a title="Delete file..." data-riftype="versione" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData2[index].URL) + '" href="" class="rimuoviFileButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-minus ui-btn-icon-notext <?php if(!isset($_SESSION[\'validUser\'])) {echo "hide";}?>">navigation</a>';
+                        html += '<a title="Delete file..." data-riftype="versione" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData2[index].URL) + '" href="" class="rimuoviFileButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-minus ui-btn-icon-notext">navigation</a>';
                         html += '</div>'
                     }
 
@@ -3158,7 +3158,7 @@ function beforeSubmitFile() {
         }*/
 
         //Allowed file size is less than 5 MB (1048576)
-        if (fsize > 15728640) {
+        if (fsize > 33554432) {
             $("#output").html("<b>" + bytesToSize(fsize) + "</b> Too big file! <br />File is too big, it should be less than 12 MB.");
             return false
         }
@@ -4487,7 +4487,7 @@ function beforeSubmit() {
         }
 
         //Allowed file size is less than 5 MB (1048576)
-        if (fsize > 15728640) {
+        if (fsize > 33554432) {
             $("#output").html("<b>" + bytesToSize(fsize) + "</b> Too big file! <br />File is too big, it should be less than 12 MB.");
             return false
         }
