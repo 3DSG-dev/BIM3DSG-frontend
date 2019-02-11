@@ -22,7 +22,7 @@ include("php/auth.php");
     <script type="text/javascript" src="js/plupload.full.min.js"></script>
     <!--<script src="https://js.leapmotion.com/leap-0.6.3.js"></script>//-->
     <!--<script src="https://js.leapmotion.com/leap-0.6.4.js"></script>//-->
-    <script src="fwlib/leap-0.6.4.min.js"></script>
+    <!--<script src="fwlib/leap-0.6.4.min.js"></script>//-->
     <script type="text/javascript" src="js/BIMDuomoCacheManager.js"></script>
     <script type="text/javascript" src="js/PointCloudCacheManager.js"></script>
     <script type="text/javascript" src="js/TextureCacheManager.js"></script>

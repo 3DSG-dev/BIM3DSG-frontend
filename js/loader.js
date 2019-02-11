@@ -1611,9 +1611,65 @@ function SetEventHandler() {
             });
     });
 
-    Leap.loop(controllerOptions, LeapController);
+    //Leap.loop(controllerOptions, LeapController);
+    initLeapMotion();
 
     SetToolbarEvent();
+}
+
+var ws;
+var focusListener;
+var blurListener;
+
+if ((typeof(WebSocket) == 'undefined') &&
+    (typeof(MozWebSocket) != 'undefined')) {
+    WebSocket = MozWebSocket;
+}
+
+// Create the socket with event handlers
+function initLeapMotion() {
+    // Create and open the socket
+    ws = new WebSocket("ws://localhost:6437/v7.json");
+
+    // On successful connection
+    ws.onopen = function(event) {
+        ws.send(JSON.stringify({focused: true})); // claim focus
+
+        focusListener = window.addEventListener('focus', function(e) {
+            ws.send(JSON.stringify({focused: true})); // claim focus
+        });
+
+        blurListener = window.addEventListener('blur', function(e) {
+            ws.send(JSON.stringify({focused: false})); // relinquish focus
+        });
+    };
+
+    // On message received
+    ws.onmessage = function(event) {
+        var obj = JSON.parse(event.data);
+        LeapController(obj);
+/*        if (!paused) {
+            var obj = JSON.parse(event.data);
+            var str = JSON.stringify(obj, undefined, 2);
+            if(!obj.hasOwnProperty("timestamp")){
+                console.log(str);
+            } else{
+                document.getElementById("output").innerHTML = '<pre>' + str + '</pre>';
+            }
+        }*/
+    };
+
+    // On socket close
+    ws.onclose = function(event) {
+        ws = null;
+        window.removeEventListener("focus", focusListener);
+        window.removeEventListener("blur", blurListener);
+    }
+
+    // On socket error
+    ws.onerror = function(event) {
+        //alert("Received error");
+    };
 }
 
 function SetToolbarEvent(blocchi) {
@@ -4620,22 +4676,37 @@ function DisplayRowData(frame) {
     pointableOutput.innerHTML = pointableString;
 }
 
-function handIsClosed(hand) {
-    if (hand.pointables.length > 0) {
+function handIsClosed(hand, pointables) {
+/*    if (hand.pointables.length > 0) {
         for (var i = 0; i < hand.pointables.length; i++) {
             var pointable = hand.pointables[i];
             if (pointable.type != 0 && pointable.extended)
+                return false;
+        }
+    }*/
+    if (pointables.length > 0) {
+        for (var i = 0; i < pointables.length; i++) {
+            var pointable = pointables[i];
+            if (pointable.handId == hand.id && pointable.type != 0 && pointable.extended)
                 return false;
         }
     }
     return true;
 }
 
-function handIsOpen(hand) {
-    if (hand.pointables.length > 0) {
+function handIsOpen(hand, pointables) {
+/*    if (hand.pointables.length > 0) {
         for (var i = 0; i < hand.pointables.length; i++) {
             var pointable = hand.pointables[i];
             if (pointable.type != 0 && !pointable.extended)
+                return false;
+        }
+        return true;
+    }*/
+    if (pointables.length > 0) {
+        for (var i = 0; i < pointables.length; i++) {
+            var pointable = pointables[i];
+            if (pointable.handId == hand.id && pointable.type != 0 && !pointable.extended)
                 return false;
         }
         return true;
@@ -4643,8 +4714,8 @@ function handIsOpen(hand) {
     return false;
 }
 
-function fingerOnly1(hand) {
-    var found = false;
+function fingerOnly1(hand, pointables) {
+/*    var found = false;
     if (hand.pointables.length > 0) {
         for (var i = 0; i < hand.pointables.length; i++) {
             var pointable = hand.pointables[i];
@@ -4656,11 +4727,26 @@ function fingerOnly1(hand) {
             }
         }
     }
+    return found;*/
+    var found = false;
+    if (pointables.length > 0) {
+        for (var i = 0; i < pointables.length; i++) {
+            var pointable = pointables[i];
+            if (pointable.handId == hand.id) {
+                if (pointable.extended && pointable.type == 1) {
+                    found = true;
+                }
+                else if (pointable.extended) {
+                    return false;
+                }
+            }
+        }
+    }
     return found;
 }
 
-function fingerOnly12(hand) {
-    var n = 0;
+function fingerOnly12(hand, pointables) {
+/*    var n = 0;
     if (hand.pointables.length > 0) {
         for (var i = 0; i < hand.pointables.length; i++) {
             var pointable = hand.pointables[i];
@@ -4672,11 +4758,26 @@ function fingerOnly12(hand) {
             }
         }
     }
+    return n == 2;*/
+    var n = 0;
+    if (pointables.length > 0) {
+        for (var i = 0; i < pointables.length; i++) {
+            var pointable = pointables[i];
+            if (pointable.handId == hand.id) {
+                if (pointable.extended && (pointable.type == 1 || pointable.type == 2)) {
+                    n = n + 1;
+                }
+                else if (pointable.extended) {
+                    return false;
+                }
+            }
+        }
+    }
     return n == 2;
 }
 
-function fingerOnly123(hand) {
-    var n = 0;
+function fingerOnly123(hand, pointables) {
+/*    var n = 0;
     if (hand.pointables.length > 0) {
         for (var i = 0; i < hand.pointables.length; i++) {
             var pointable = hand.pointables[i];
@@ -4688,11 +4789,26 @@ function fingerOnly123(hand) {
             }
         }
     }
+    return n == 3;*/
+    var n = 0;
+    if (pointables.length > 0) {
+        for (var i = 0; i < pointables.length; i++) {
+            var pointable = pointables[i];
+            if (pointable.handId == hand.id) {
+                if (pointable.extended && (pointable.type == 1 || pointable.type == 2 || pointable.type == 3)) {
+                    n = n + 1;
+                }
+                else if (pointable.extended) {
+                    return false;
+                }
+            }
+        }
+    }
     return n == 3;
 }
 
 function LeapController(frame) {
-    if (paused) {
+    if (paused || frame.hands == undefined) {
         return; // Skip this update
     }
     //DisplayRowData(frame);
@@ -4742,9 +4858,11 @@ function LeapController(frame) {
     pointerCanvas.width = theCanvas.width();
     pointerCanvas.height = theCanvas.height();
 
+    var pointables = frame.pointables;
+
     if (leapMode == 1) {
         if (rightHand && previousRightHand) {
-            if (handIsOpen(rightHand) && !handIsClosed(rightHand)) {
+            if (handIsOpen(rightHand, pointables) && !handIsClosed(rightHand, pointables)) {
                 //if (rightHand.grabStrength < 0.75) {
                 SetAuxScene();
                 WheelZoom((previousRightHand.palmPosition[2] - rightHand.palmPosition[2]) / 50);
@@ -4752,30 +4870,45 @@ function LeapController(frame) {
                 RotateXZ((previousRightHand.palmPosition[1] - rightHand.palmPosition[1]) / 50, (rightHand.palmPosition[0] - previousRightHand.palmPosition[0]) / 50);
                 SetAuxScene();
             }
-            else if (fingerOnly12(rightHand)) {
+            else if (fingerOnly12(rightHand, pointables)) {
                 SetAuxScene();
                 PanXZ((rightHand.palmPosition[0] - previousRightHand.palmPosition[0]) / 100, (previousRightHand.palmPosition[1] - rightHand.palmPosition[1]) / 100);
                 SetAuxScene();
                 PanY((previousRightHand.palmPosition[2] - rightHand.palmPosition[2]) / 100);
                 SetAuxScene();
             }
-            else if (fingerOnly123(rightHand)) {
+            else if (fingerOnly123(rightHand, pointables)) {
                 SetAuxScene();
                 LookRotateXZ((previousRightHand.palmPosition[1] - rightHand.palmPosition[1]) / 50, (rightHand.palmPosition[0] - previousRightHand.palmPosition[0]) / 50);
                 SetAuxScene();
                 PanY((previousRightHand.palmPosition[2] - rightHand.palmPosition[2]) / 100);
                 SetAuxScene();
             }
-            else if (fingerOnly1(rightHand)) {
-                var indexFinger = rightHand.pointables[1];
-                if (indexFinger.touchDistance >= 0) {
+            else if (fingerOnly1(rightHand, pointables)) {
+                var indexFinger;
+                for (var i = 0; i < pointables.length; i++) {
+                    var pointable = pointables[i];
+                    if (pointable.handId == hand.id) {
+                        if (pointable.extended && pointable.type == 1) {
+                            indexFinger = pointable;
+                            break;
+                        }
+                    }
+                }
+                var canvasX = theCanvas.width() * NormalizeLeapX(indexFinger.tipPosition[0]);
+                var canvasY = theCanvas.height() * (1 - NormalizeLeapY(indexFinger.tipPosition[1]));
+
+                if (indexFinger.tipPosition[2] >= 0) {
+                    //if (indexFinger.touchDistance >= 0) {
                     //Get a pointable and normalize the tip position
-                    var interactionBox = frame.interactionBox;
-                    var normalizedPosition = interactionBox.normalizePoint(indexFinger.tipPosition, true);
+                    //var interactionBox = frame.interactionBox;
+                    //var normalizedPosition = interactionBox.normalizePoint(indexFinger.tipPosition, true);
 
                     // Convert the normalized coordinates to span the canvas
-                    var canvasX = pointerCanvas.width * normalizedPosition[0];
-                    var canvasY = pointerCanvas.height * (1 - normalizedPosition[1]);
+                    //var canvasX = pointerCanvas.width * normalizedPosition[0];
+                    //var canvasY = pointerCanvas.height * (1 - normalizedPosition[1]);
+                    //var canvasX = pointerCanvas.width * normalizedPosition[0];
+                    //var canvasY = pointerCanvas.height * (1 - normalizedPosition[1]);
 
                     var context = pointerCanvas.getContext('2d');
 
@@ -4795,15 +4928,16 @@ function LeapController(frame) {
                 }
                 else if (!touchDistance) {
                     touchDistance = true;
-                    var theCanvas = $("#theCanvas");
+                    //var theCanvas = $("#theCanvas");
                     //Get a pointable and normalize the tip position
-                    var pointable = rightHand.pointables[1];
-                    var interactionBox = frame.interactionBox;
-                    var normalizedPosition = interactionBox.normalizePoint(pointable.tipPosition, true);
+                    //var pointable = rightHand.pointables[1];
+                    //var interactionBox = frame.interactionBox;
+                    //var normalizedPosition = interactionBox.normalizePoint(pointable.tipPosition, true);
+                    //var normalizedPosition = interactionBox.normalizePoint(indexFinger.tipPosition, true);
 
                     // Convert the normalized coordinates to span the canvas
-                    var canvasX = theCanvas.width() * normalizedPosition[0];
-                    var canvasY = theCanvas.height() * (1 - normalizedPosition[1]);
+                    //var canvasX = theCanvas.width() * normalizedPosition[0];
+                    //var canvasY = theCanvas.height() * (1 - normalizedPosition[1]);
 
                     SceneClickHandler({x: canvasX, y: canvasY});
                 }
@@ -5050,6 +5184,30 @@ function LeapController(frame) {
 
     // Store frame for motion functions
     previousFrame = frame;
+}
+
+function NormalizeLeapY(position) {
+    if (position <= 100) {
+        return 0;
+    }
+    else if (position >= 300) {
+        return 1;
+    }
+    else {
+        return (position - 100) / 200;
+    }
+}
+
+function NormalizeLeapX(position) {
+    if (position <= -150) {
+        return 0;
+    }
+    else if (position >= 200) {
+        return 1;
+    }
+    else {
+        return (position + 150) / 350;
+    }
 }
 
 function vectorToString(vector, digits) {
