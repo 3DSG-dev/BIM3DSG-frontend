@@ -2527,27 +2527,39 @@ function UpdateInfoPanel(codice) {
 
                     if (resultData2[0].xc == null) {
                         $("#textCenterX").val("Unknown");
+                        $("#textWorldCenterX").val("Unknown");
                     }
                     else {
                         $("#textCenterX").val(parseFloat(resultData2[0].xc).toFixed(2) + " m");
+                        $("#textWorldCenterX").val((parseFloat(resultData2[0].xc) - parseFloat(resultData2[0].TranslationX)).toFixed(2) + " m");
                     }
                     if (resultData2[0].yc == null) {
                         $("#textCenterY").val("Unknown");
+                        $("#textWorldCenterY").val("Unknown");
                     }
                     else {
                         $("#textCenterY").val(parseFloat(resultData2[0].yc).toFixed(2) + " m");
+                        $("#textWorldCenterY").val((parseFloat(resultData2[0].zc) - parseFloat(resultData2[0].TranslationY)).toFixed(2) + " m");
                     }
                     if (resultData2[0].zc == null) {
                         $("#textCenterZ").val("Unknown");
+                        $("#textWorldCenterZ").val("Unknown");
                     }
                     else {
                         $("#textCenterZ").val(parseFloat(resultData2[0].zc).toFixed(2) + " m");
+                        $("#textWorldCenterZ").val((parseFloat(resultData2[0].zc) - parseFloat(resultData2[0].TranslationZ)).toFixed(2) + " m");
                     }
                     if (resultData2[0].zc == null) {
                         $("#textDiagonal").val("Unknown");
                     }
                     else {
                         $("#textDiagonal").val((parseFloat(resultData2[0].Radius) * 2).toFixed(2) + " m");
+                    }
+                    if (resultData2[0].SRS == null) {
+                        $("#textSrs").val("Unknown");
+                    }
+                    else {
+                        $("#textSrs").val(resultData2[0].SRS);
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {

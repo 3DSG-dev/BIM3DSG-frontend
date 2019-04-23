@@ -262,6 +262,10 @@ include("php/auth.php");
                             <label for="textUpdateOn" class="infoLabel">Update on</label>
                             <input type="text" class="infoInputText" disabled="disabled" name="textUpdateOn"
                                    id="textUpdateOn" value="">
+                            <label for="textDiagonal" class="infoLabel">Diagonal</label>
+                            <input type="text" class="infoInputText" disabled="disabled" name="textDiagonal"
+                                   id="textDiagonal" value="">
+                            <h5 class="infoTitle">Local Coordinates</h5>
                             <label for="textCenterX" class="infoLabel">Center x</label>
                             <input type="text" class="infoInputText" disabled="disabled" name="textCenterX"
                                    id="textCenterX" value="">
@@ -271,9 +275,19 @@ include("php/auth.php");
                             <label for="textCenterZ" class="infoLabel">Center z</label>
                             <input type="text" class="infoInputText" disabled="disabled" name="textCenterZ"
                                    id="textCenterZ" value="">
-                            <label for="textDiagonal" class="infoLabel">Diagonal</label>
-                            <input type="text" class="infoInputText" disabled="disabled" name="textDiagonal"
-                                   id="textDiagonal" value="">
+                            <h5 class="infoTitle">World Coordinates</h5>
+                            <label for="textSrs" class="infoLabel">SRS</label>
+                            <input type="text" class="infoInputText" disabled="disabled" name="textSrs"
+                                   id="textSrs" value="">
+                            <label for="textWorldCenterX" class="infoLabel">Center x</label>
+                            <input type="text" class="infoInputText" disabled="disabled" name="textWorldCenterX"
+                                   id="textWorldCenterX" value="">
+                            <label for="textWorldCenterY" class="infoLabel">Center y</label>
+                            <input type="text" class="infoInputText" disabled="disabled" name="textWorldCenterY"
+                                   id="textWorldCenterY" value="">
+                            <label for="textWorldCenterZ" class="infoLabel">Center z</label>
+                            <input type="text" class="infoInputText" disabled="disabled" name="textWorldCenterZ"
+                                   id="textWorldCenterZ" value="">
                         </div>
                     </div>
                 </div>
