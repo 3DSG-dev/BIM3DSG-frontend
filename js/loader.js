@@ -1243,7 +1243,11 @@ $(document).on("pagecreate", function () {
                     yc: pickHotSpot.worldPos[1],
                     zc: pickHotSpot.worldPos[2],
                     radius: $('#numberHotSpotRadius').val(),
-                    category: $('#HotSpotCategoryCombo').val()
+                    category: $('#HotSpotCategoryCombo').val(),
+                    translationX: $("#textHotSpotLocalX").val(),
+                    translationY: $("#textHotSpotLocalY").val(),
+                    translationZ: $("#textHotSpotLocalZ").val(),
+                    srs: $("#textHotSpotSrs").val()
                 },
                 dataType: "json",
                 success: function (resultData) {
@@ -4435,6 +4439,23 @@ function AddNewHotSpot(pickRecord) {
             $("#textHotSpotLayer1").val(resultData[0].Layer1);
             $("#textHotSpotLayer2").val(resultData[0].Layer2);
             $("#textHotSpotLayer3").val(resultData[0].Layer3);
+            $.ajax({
+                type: 'POST',
+                url: 'php/getInfoModello.php',
+                data: {
+                    codice: codice
+                },
+                dataType: "json",
+                success: function (resultData2) {
+                    $("#textHotSpotLocalX").val(resultData2[0].TranslationX);
+                    $("#textHotSpotLocalY").val(resultData2[0].TranslationY);
+                    $("#textHotSpotLocalZ").val(resultData2[0].TranslationZ);
+                    $("#textHotSpotSrs").val(resultData2[0].SRS);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Si � verificato un errore.");
+                }
+            });
         },
         error: function (jqXHR, textStatus, errorThrown) {
             alert("Si � verificato un errore.");

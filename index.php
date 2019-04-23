@@ -628,6 +628,18 @@ include("php/auth.php");
                                        id="textHotSpotName" value="">
                                 <label for="numberHotSpotRadius" class="infoLabel">Radius</label>
                                 <input type="number" step="0.000001" class="infoInputText infoInputNumber" data-clear-btn="true" name="numberHotSpotRadius" id="numberHotSpotRadius" >
+                                <label for="textHotSpotSrs" class="infoLabel">SRS</label>
+                                <input type="text" class="infoInputText" name="textHotSpotSrs"
+                                       id="textHotSpotSrs" value="">
+                                <label for="textHotSpotLocalX" class="infoLabel">World translation X</label>
+                                <input type="text" class="infoInputText" name="textHotSpotLocalX"
+                                       id="textHotSpotLocalX" value="">
+                                <label for="textHotSpotLocalY" class="infoLabel">World translation Y</label>
+                                <input type="text" class="infoInputText" name="textHotSpotLocalY"
+                                       id="textHotSpotLocalY" value="">
+                                <label for="textHotSpotLocalZ" class="infoLabel">World translation Z</label>
+                                <input type="text" class="infoInputText" name="textHotSpotLocalZ"
+                                       id="textHotSpotLocalZ" value="">
                                 <label for="HotSpotCategoryCombo" class="infoLabel">Category</label>
                                 <select data-native-menu="false" class="infoInputText" name="HotSpotCategoryCombo" id="HotSpotCategoryCombo">
                                     <option value='0'>-</option>";

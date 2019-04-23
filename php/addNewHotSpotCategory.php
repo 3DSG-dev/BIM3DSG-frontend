@@ -16,11 +16,15 @@ $xc = isset($_GET['xc'])?$_GET['xc']:$_POST['xc'];
 $yc = isset($_GET['yc'])?$_GET['yc']:$_POST['yc'];
 $zc = isset($_GET['zc'])?$_GET['zc']:$_POST['zc'];
 $radius = isset($_GET['radius'])?$_GET['radius']:$_POST['radius'];
+$translationX = isset($_GET['translationX'])?$_GET['translationX']:$_POST['translationX'];
+$translationY = isset($_GET['translationY'])?$_GET['translationY']:$_POST['translationY'];
+$translationZ = isset($_GET['translationZ'])?$_GET['translationZ']:$_POST['translationZ'];
+$srs = isset($_GET['srs'])?$_GET['srs']:$_POST['srs'];
 $category = isset($_GET['category'])?$_GET['category']:$_POST['category'];
 $user = $_SESSION['validUserName'];
 
 if (true) {
-	$SQL = "SELECT preinitializenewhotspot('$layer0', '$layer1', '$layer2', '$layer3', '$nome', 0, $xc, $yc, $zc, $radius, $category, '$user')";
+	$SQL = "SELECT preinitializenewhotspot('$layer0', '$layer1', '$layer2', '$layer3', '$nome', 0, $xc, $yc, $zc, $radius, $translationX, $translationY, $translationZ, '$srs', $category, '$user')";
 }
 else
 {
