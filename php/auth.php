@@ -12,7 +12,7 @@ function checkUser()
 		return $_SESSION['validUserName'];  
 	}
 	else {
-		$_SESSION['dbName'] = "BIM3DSG_BIM-test-new";
+		$_SESSION['dbName'] = "BIM3DSG_BIM-test-v2";
 		$_SESSION['dbConnectionString'] = "host=localhost port=5432 dbname=" . $_SESSION['dbName'] . " user=postgres password=5ETBL6gzh9";
 
 		$dbconn = pg_connect($_SESSION['dbConnectionString']) or die ('Error connecting to db');

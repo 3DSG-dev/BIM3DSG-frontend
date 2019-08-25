@@ -2682,6 +2682,7 @@ function UpdateImagePanel(codice) {
                 html2 += '</div>';
                 html += '<a title="Delete image..." data-riftype="oggetto" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData[index].URL) + '" href="" class="rimuoviImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-minus ui-btn-icon-notext <?php if(!isset($_SESSION[\'validUser\'])) {echo "hide";}?>">navigation</a>';
                 html += '<a title="Information ..." data-riftype="oggetto" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData[index].URL) + '" href="" class="infoImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-info ui-btn-icon-notext <?php if(!isset($_SESSION[\'validUser\'])) {echo "hide";}?>">navigation</a>';
+                html += '<a title="Photogrammetry data ..." data-riftype="oggetto" data-rifpz="' + codice + '" data-rifurl="' + encodeURIComponent(resultData[index].URL) + '" href="./image-ref.php?id=' + codice + '&url=\'' + encodeURIComponent(resultData[index].URL) + '\'" target="_blank" class="photogrammetryImmagineButton ui-btn ui-btn-inline ui-shadow ui-corner-all ui-icon-comment ui-btn-icon-notext <?php if(!isset($_SESSION[\'validUser\'])) {echo "hide";}?>">navigation</a>';
                 html += '</div>'
             }
             $.ajax({
@@ -3038,8 +3039,165 @@ function SaveInfoImage(btn, elem) {
     }
 }
 
-// file panel functions
+// PhotogrammetryImage
+function LoadPhotogrammetryImage(codiceOggetto, url) {
+    function LoadImage(codiceOggetto, url) {
+        function LoadArea(map, imgBound) {
+            function DrawHotspot(map, imgBound, resultData) {
+                var tf = [[],[],[],[]];
+                tf[0][0] = parseFloat(resultData["tf11"]);
+                tf[0][1] = parseFloat(resultData["tf12"]);
+                tf[0][2] = parseFloat(resultData["tf13"]);
+                tf[0][3] = parseFloat(resultData["tf14"]);
+                tf[1][0] = parseFloat(resultData["tf21"]);
+                tf[1][1] = parseFloat(resultData["tf22"]);
+                tf[1][2] = parseFloat(resultData["tf23"]);
+                tf[1][3] = parseFloat(resultData["tf24"]);
+                tf[2][0] = parseFloat(resultData["tf31"]);
+                tf[2][1] = parseFloat(resultData["tf32"]);
+                tf[2][2] = parseFloat(resultData["tf33"]);
+                tf[2][3] = parseFloat(resultData["tf34"]);
+                tf[3][0] = parseFloat(resultData["tf41"]);
+                tf[3][1] = parseFloat(resultData["tf42"]);
+                tf[3][2] = parseFloat(resultData["tf43"]);
+                tf[3][3] = parseFloat(resultData["tf44"]);
+                var f = parseFloat(resultData["f"]);
+                var cx = parseFloat(resultData["cx"]);
+                var cy = parseFloat(resultData["cy"]);
+                var k1 = parseFloat(resultData["k1"]);
+                var k2 = parseFloat(resultData["k2"]);
+                var k3 = parseFloat(resultData["k3"]);
+                var k4 = parseFloat(resultData["k4"]);
+                var p1 = parseFloat(resultData["p1"]);
+                var p2 = parseFloat(resultData["p2"]);
+                var p3 = parseFloat(resultData["p3"]);
+                var p4 = parseFloat(resultData["p4"]);
+                var b1 = parseFloat(resultData["b1"]);
+                var b2 = parseFloat(resultData["b2"]);
+                var scale = parseFloat(resultData["scale"]);
+                var tl = [[],[],[],[]];
+                tl[0][0] = scale * parseFloat(resultData["r11"]);
+                tl[0][1] = scale * parseFloat(resultData["r12"]);
+                tl[0][2] = scale * parseFloat(resultData["r13"]);
+                tl[0][3] = parseFloat(resultData["t1"]);
+                tl[1][0] = scale * parseFloat(resultData["r21"]);
+                tl[1][1] = scale * parseFloat(resultData["r22"]);
+                tl[1][2] = scale * parseFloat(resultData["r23"]);
+                tl[1][3] = parseFloat(resultData["t2"]);
+                tl[2][0] = scale * parseFloat(resultData["r31"]);
+                tl[2][1] = scale * parseFloat(resultData["r32"]);
+                tl[2][2] = scale * parseFloat(resultData["r33"]);
+                tl[2][3] = parseFloat(resultData["t3"]);
+                tl[3][0] = 0;
+                tl[3][1] = 0;
+                tl[3][2] = 0;
+                tl[3][3] = 1;
 
+                //var tmpl = MatrixTraspose(MatrixMultiply(tl, tf));
+                var t = math.inv(math.transpose(math.multiply(tl, tf)));
+
+                $.ajax({
+                    url: "./php/getPhotogrammetryHotspot.php",
+                    dataType: "json",
+                    crossDomain: false,
+                    success: function (resultData2) {
+                        for (i = 0; i < resultData2.length; i++) {
+                            var worldPoint = [];
+                            worldPoint[0] = parseFloat(resultData2[i]["xc"]);
+                            worldPoint[1] = parseFloat(resultData2[i]["yc"]);
+                            worldPoint[2] = parseFloat(resultData2[i]["zc"]);
+                            worldPoint[3] = 1;
+                            var radius = parseFloat(resultData2[i]["Radius"]) * 400;
+
+                            localPoint = math.multiply(worldPoint, t);
+
+                            var x = localPoint[0] / localPoint [2];
+                            var y = localPoint[1] / localPoint [2];
+
+                            var image = $("#photogrammetry");
+                            var w = parseInt(resultData["imageWidth"]);
+                            var h = parseInt(resultData["imageHeight"]);
+                            //var resizeScale = w / image.width();
+                            var resizeScale = w / imgBound[1];
+
+                            var r = math.sqrt(math.pow(x, 2) + math.pow(y,2));
+                            var xa = x * (1 + k1*math.pow(r,2) + k2*math.pow(r,4) + k3*math.pow(r,6) + k4*math.pow(r,8)) + (p1 * (math.pow(r,2) + 2*math.pow(x,2) + 2*p2*x*y) * (1 + p3*math.pow(r,2) + p4*math.pow(r,4)));
+                            var ya = y * (1 + k1*math.pow(r,2) + k2*math.pow(r,4) + k3*math.pow(r,6) + k4*math.pow(r,8)) + (p1 * (math.pow(r,2) + 2*math.pow(y,2) + 2*p2*x*y) * (1 + p3*math.pow(r,2) + p4*math.pow(r,4)));
+                            var u = (w * 0.5 + cx + xa * f + xa * b1 + ya * b2) / resizeScale;
+                            var v = (h * 0.5 + cy + ya * f) / resizeScale;
+                            if (u >= 0 && u <= imgBound[1] && v >= 0 && v <= imgBound[0]) {
+                                var circle = L.circle([imgBound[0] - v, u], {
+                                    id: 'p' + resultData2[i]["CodiceModello"],
+                                    color: 'red',
+                                    fillColor: '#f03',
+                                    fillOpacity: 0.5,
+                                    radius: radius
+                                }).addTo(map);
+                                circle.on("click", function (event) {
+                                    ResetInfoPanel(".infoOggettoPanelAux2");
+                                    ResetInfoPanel(".infoVersionPanelAux2");
+
+                                    var codice = event.sourceTarget.options.id.substring(1);
+
+                                    GetWriteMode(codice);
+
+                                    UpdateInfoPanel(codice);
+
+                                    UpdateImagePanel(codice);
+
+                                    UpdateFilePanel(codice);
+                                });
+                            }
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert("Si � verificato un errore.");
+                    }
+                });
+            }
+
+            $.ajax({
+                url: "./php/getPhotogrammetryDataOggetti.php",
+                dataType: "json",
+                crossDomain: false,
+                data: {
+                    codiceOggetto: codiceOggetto,
+                    URL: url
+                },
+                success: function (resultData) {
+                    DrawHotspot(map, imgBound, resultData);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Si � verificato un errore.");
+                }
+            });
+        }
+
+        var img = $("#photogrammetry");
+        var MyImageCacheManager = new ImageCacheManager();
+        MyImageCacheManager.fileReceived = function (data) {
+            var img = new Image();
+            img.onload = function(){
+                var imgBound = [img.height, img.width];
+                var elem = $("#theCanvas");
+                var map = L.map('theCanvas', {
+                    crs: L.CRS.Simple,
+                    minZoom: -2
+                });
+                var bounds = [[0,0], imgBound];
+                var image = L.imageOverlay(img.src, bounds).addTo(map);
+                map.fitBounds(bounds);
+                LoadArea(map, imgBound);
+            };
+            img.src = "data:Content-Type: image/jpeg;base64," + data.innerData;
+        };
+        MyImageCacheManager.getFile(codiceOggetto, url, "max", false);
+    }
+
+    LoadImage(codiceOggetto, url);
+}
+
+// file panel functions
 function UpdateFilePanel(codice) {
     $.ajax({
         type: 'POST',

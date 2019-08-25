@@ -182,6 +182,13 @@ a.fileLink {
     right: 0px;
 }
 
+.photogrammetryImmagineButton {
+    position: absolute;
+    margin: 0px;
+    top: 32px;
+    right: 0px;
+}
+
 .salvaImmagineButton {
     margin: 0px;
     top: -3px;
