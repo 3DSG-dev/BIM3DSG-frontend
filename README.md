@@ -1,4 +1,4 @@
-CHIMERA OBJ Importer
+BIM3DSG OBJ Importer
 
 Page Under construction
 
