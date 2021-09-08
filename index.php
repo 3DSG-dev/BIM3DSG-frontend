@@ -18,7 +18,8 @@ include("php/auth.php");
     <!--<script type="text/javascript" src="js/test.js"></script>/-->
     <script type="text/javascript" src="fwlib/jquery.indexeddb.js"></script>
     <!--<script type="text/javascript" src="fwlib/sceneJSPlugins/scenejs.js"></script>//-->
-    <script type="text/javascript" src="http://scenejs.org/api/latest/scenejs.js"></script>
+    <script type="text/javascript" src="fwlib/sceneJSPlugins/scenejs-4.2.2.js"></script>
+    <!--<script type="text/javascript" src="http://scenejs.org/api/latest/scenejs.js"></script>//-->
     <script type="text/javascript" src="js/plupload.full.min.js"></script>
     <!--<script src="https://js.leapmotion.com/leap-0.6.3.js"></script>//-->
     <!--<script src="https://js.leapmotion.com/leap-0.6.4.js"></script>//-->
